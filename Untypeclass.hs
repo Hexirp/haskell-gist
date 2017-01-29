@@ -2,6 +2,8 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 
+module Untypeclass where
+
 -- ################################
 
 data Semigroup :: * -> * where
@@ -51,7 +53,7 @@ instance_applicative_natural :: Applicative f => Applicative' f
 instance_applicative_natural = Applicative' (Functor' fmap) pure (<*>)
 
 instance_applicative_ziplist :: Applicative' []
-instance_applicative_ziplist = applicatve2 (Functor' map) (:[]) zipWith
+instance_applicative_ziplist = applicatve2 (Functor' map) (repeat) zipWith
 
 -- ################################
 
