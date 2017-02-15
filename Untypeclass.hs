@@ -1,21 +1,19 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE LiberalTypeSynonyms #-}
 
 module Untypeclass where
 
 -- ################################
 
-data Semigroup :: * -> * where
-  Semigroup
-    :: (m -> m -> m)
-    -> Semigroup m
+type Semigroup m = m -> m -> m
 
 instance_semigroup_int_by_addition :: Semigroup Int
-instance_semigroup_int_by_addition = Semigroup (+)
+instance_semigroup_int_by_addition = (+)
 
 instance_semigroup_int_by_multiplication :: Semigroup Int
-instance_semigroup_int_by_multiplication = Semigroup (*)
+instance_semigroup_int_by_multiplication = (*)
 
 -- ################################
 
@@ -53,14 +51,10 @@ instance_applicative_natural :: Applicative f => Applicative' f
 instance_applicative_natural = Applicative' (Functor' fmap) pure (<*>)
 
 instance_applicative_ziplist :: Applicative' []
-instance_applicative_ziplist = applicatve2 (Functor' map) (repeat) zipWith
+instance_applicative_ziplist = applicatve2 (Functor' map) repeat zipWith
 
 -- ################################
 
 main :: IO ()
 main = do
-  let f = (+0):(+1):(+2):[]
-  let x = 0:1:2:3:4:[]
-  print $ fmap' instance_functor_natural (+ 1) (Just 1) -- Just 2
-  print $ fapp' instance_applicative_natural f x        -- [0,1,2,3,4,1,2,3,4,5,2,3,4,5,6]
-  print $ fapp' instance_applicative_ziplist f x        -- [0,2,4]
+  return ()
