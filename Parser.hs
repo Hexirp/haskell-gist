@@ -93,11 +93,20 @@ module Parser where
 
   -- ########
 
-  parse_a_n_b_n :: Parser ()
+  parse_a_n_b_n :: Parser Int
   parse_a_n_b_n = do
-    const () <$> char 'a'
-    try () parse_a_n_b_n
-    const () <$> char 'b'
+    char 'a'
+    n <- try 0 parse_a_n_b_n
+    char 'b'
+    return $ n + 1
+
+  parse_a_b_a_b :: Parser Int
+  parse_a_b_a_b = do
+    n0 <- parse_a_n_b_n
+    n1 <- loop (+) 0 $ do
+      char ' '
+      parse_a_n_b_n
+    return $ n0 + n1
 
   print_parse :: (Show a) => Parser a -> String -> IO ()
   print_parse p0 s0 = do
@@ -112,6 +121,7 @@ module Parser where
     let lf = putStrLn ""
     let pu = putStrLn
     let pa = print_parse parse_a_n_b_n
+    let pb = print_parse parse_a_b_a_b
     lf
     pu "parse_a_n_b_n:"
     pa "aaabbb"
@@ -122,4 +132,10 @@ module Parser where
     pa "abb"
     pa "bbb"
     pa "abc"
+    lf
+    pu "parse_a_b_a_b:"
+    pb "aabb"
+    pb "aabb ab aabb"
+    pb "ab ab  aabb"
+    pb "ab aabb aaabbb aaaabbbb"
     lf
