@@ -2,6 +2,13 @@ module LinkedList
   ( LinkedList(..)
   , empty
   , one
+  , toLinked
+  , Tape(..)
+  , toTape
+  , toLinkedFromTape
+  , toTapeFromLinked
+  , traverseLeft
+  , traverseRight
   ) where
   data LinkedList a = LNil () () (LinkedList a)
                     | Node (LinkedList a) a (LinkedList a)
@@ -42,3 +49,14 @@ module LinkedList
   toLinkedFromTape (TRNil a () ()) = case a of
     [] -> RNil (toLinkedFromTape $ TLNil () () []) () ()
     (x:xs) -> RNil (toLinkedFromTape $ TNode xs x []) () ()
+
+  toTapeFromLinked :: LinkedList a -> Tape a
+  toTapeFromLinked (LNil () () a) = TLNil () () (traverseRight a)
+  toTapeFromLinked (Node a x b) = TNode (traverseLeft a) x (traverseRight b)
+  toTapeFromLinked (RNil a () ()) = TRNil (traverseLeft a) () ()
+
+  traverseLeft :: LinkedList a -> [a]
+  traverseLeft = undefined
+
+  traverseRight :: LinkedList a -> [a]
+  traverseRight = undefined
