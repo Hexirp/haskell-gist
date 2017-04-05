@@ -73,3 +73,34 @@ module LinkedList
 
   instance (Show a) => Show (LinkedList a) where
     show = show . toTapeFromLinked
+
+  moveLeft :: LinkedList a -> Maybe (LinkedList a)
+  moveLeft (LNil () () a) = Nothing
+  moveLeft (Node a x b) = Just a
+  moveLeft (RNil a () ()) = Just a
+
+  moveRight :: LinkedList a -> Maybe (LinkedList a)
+  moveRight (LNil () () a) = Just a
+  moveRight (Node a x b) = Just b
+  moveRight (RNil a () ()) = Nothing
+
+  type Trampoline a b = a -> Either b a
+
+  toTrampoline :: (a -> Maybe a) -> Trampoline a a
+  toTrampoline f x = case f x of
+    Nothing -> Left x
+    Just a -> Right a
+
+  runTrampoline :: Trampoline a b -> a -> b
+  runTrampoline f x = case f x of
+    Left b -> b
+    Right a -> runTrampoline f a
+
+  runLoop :: (a -> Maybe a) -> a -> a
+  runLoop = runTrampoline . toTrampoline
+
+  moveToLeftEnd :: LinkedList a -> LinkedList a
+  moveToLeftEnd = runLoop moveLeft
+
+  moveToRightEnd :: LinkedList a -> LinkedList a
+  moveToRightEnd = runLoop moveRight
