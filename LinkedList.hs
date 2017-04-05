@@ -10,9 +10,10 @@ module LinkedList
   , traverseLeft
   , traverseRight
   ) where
-  data LinkedList a = LNil () () (LinkedList a)
-                    | Node (LinkedList a) a (LinkedList a)
-                    | RNil (LinkedList a) () ()
+  -- | LinkedListは双方向連結リストを表す。
+  data LinkedList a = LNil () () (LinkedList a) -- ^ 左の終端を表す。
+                    | Node (LinkedList a) a (LinkedList a) -- ^ 中間ノードを表す。
+                    | RNil (LinkedList a) () () -- ^ 右の終端を表す。
 
   empty :: LinkedList a
   empty = l
@@ -64,3 +65,11 @@ module LinkedList
   traverseRight (LNil _ () a) = traverseRight a
   traverseRight (Node _ x a) = x : traverseRight a
   traverseRight (RNil _ () ()) = []
+
+  instance (Show a) => Show (Tape a) where
+    show (TLNil () () a) = "." ++ show a
+    show (TNode a x b) = show a ++ "[" ++ show x ++ "]" ++ show b
+    show (TRNil a () ()) = show a ++ "."
+
+  instance (Show a) => Show (LinkedList a) where
+    show = show . toTapeFromLinked
