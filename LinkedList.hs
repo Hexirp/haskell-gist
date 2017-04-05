@@ -56,7 +56,11 @@ module LinkedList
   toTapeFromLinked (RNil a () ()) = TRNil (traverseLeft a) () ()
 
   traverseLeft :: LinkedList a -> [a]
-  traverseLeft = undefined
+  traverseLeft (LNil () () _) = []
+  traverseLeft (Node a x _) = x : traverseLeft a
+  traverseLeft (RNil a () _) = traverseLeft a
 
   traverseRight :: LinkedList a -> [a]
-  traverseRight = undefined
+  traverseRight (LNil _ () a) = traverseRight a
+  traverseRight (Node _ x a) = x : traverseRight a
+  traverseRight (RNil _ () ()) = []
