@@ -28,12 +28,6 @@ module LinkedList
       n = Node l x r
       r = RNil n () ()
 
-  linkedList :: (LinkedList a -> b) -> (LinkedList a -> a -> LinkedList a -> b) -> (LinkedList a -> b) -> LinkedList a -> b
-  linkedList f g h x = case x of
-    (LNil _ _ z) -> f x
-    (Node s x z) -> g s x z
-    (RNil s _ _) -> h s
-
   lNil = LNil () ()
 
   rNil a = RNil a () ()
@@ -45,6 +39,12 @@ module LinkedList
               | TNode [a] a [a]
               | TRNil [a] () ()
 
+  tape :: ([a] -> b) -> ([a] -> a -> [a] -> b) -> ([a] -> b) -> Tape a -> b
+  tape f g h x = case x of
+    (TLNil _ _ z) -> f z
+    (TNode s x z) -> g s x z
+    (TRNil s _ _) -> h s
+
   tLnil = TLNil () ()
 
   tRNil a = TRNil a () ()
@@ -53,17 +53,18 @@ module LinkedList
   toTape = TLNil () ()
 
   toLinkedFromTape :: Tape a -> LinkedList a
-  toLinkedFromTape (TLNil () () a) = case a of
-    [] -> LNil () () (toLinkedFromTape $ TRNil [] () ())
-    (x:xs) -> LNil () () (toLinkedFromTape $ TNode [] x xs)
-  toLinkedFromTape (TNode a b c) = case (a, c) of
-    ([], []) -> Node (toLinkedFromTape $ TLNil () () [b]) b (toLinkedFromTape $ TRNil [b] () ())
-    (x:xs, []) -> Node (toLinkedFromTape $ TNode xs x [b]) b (toLinkedFromTape $ TRNil (b:x:xs) () ())
-    ([], x:xs) -> Node (toLinkedFromTape $ TLNil () () (b:x:xs)) b (toLinkedFromTape $ TNode [b] x xs)
-    (x:xs, y:ys) -> Node (toLinkedFromTape $ TNode xs x (b:y:ys)) b (toLinkedFromTape $ TNode (b:x:xs) y ys)
-  toLinkedFromTape (TRNil a () ()) = case a of
-    [] -> RNil (toLinkedFromTape $ TLNil () () []) () ()
-    (x:xs) -> RNil (toLinkedFromTape $ TNode xs x []) () ()
+  toLinkedFromTape = tape l n r
+    where
+      l [] = lNil $ toLinkedFromTape $ tRNil []
+      l (x:xs) = lNil $ toLinkedFromTape $ TNode [] x xs
+
+      n [] x [] = Node (toLinkedFromTape $ tLnil [x]) x (toLinkedFromTape $ tRNil [x])
+      n (a:as) x [] = Node (toLinkedFromTape $ TNode as a [x]) x (toLinkedFromTape $ tRNil $ x:a:as)
+      n [] x (b:bs) = Node (toLinkedFromTape $ tLnil $ x:b:bs) x (toLinkedFromTape $ TNode [x] b bs)
+      n (a:as) x (b:bs) = Node (toLinkedFromTape $ TNode as a [x]) x  (toLinkedFromTape $ TNode [x] b bs)
+
+      r [] = rNil $ toLinkedFromTape $ tLnil []
+      r (x:xs) = rNil $ toLinkedFromTape $ TNode xs x []
 
   toTapeFromLinked :: LinkedList a -> Tape a
   toTapeFromLinked (LNil () () a) = TLNil () () (traverseRight a)
