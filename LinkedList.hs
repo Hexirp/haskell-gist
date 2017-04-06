@@ -58,10 +58,13 @@ module LinkedList
       l [] = lNil $ toLinkedFromTape $ tRNil []
       l (x:xs) = lNil $ toLinkedFromTape $ TNode [] x xs
 
-      n [] x [] = Node (toLinkedFromTape $ tLnil [x]) x (toLinkedFromTape $ tRNil [x])
-      n (a:as) x [] = Node (toLinkedFromTape $ TNode as a [x]) x (toLinkedFromTape $ tRNil $ x:a:as)
-      n [] x (b:bs) = Node (toLinkedFromTape $ tLnil $ x:b:bs) x (toLinkedFromTape $ TNode [x] b bs)
-      n (a:as) x (b:bs) = Node (toLinkedFromTape $ TNode as a [x]) x  (toLinkedFromTape $ TNode [x] b bs)
+      n a x b = Node (nl a x b) x (nr a x b)
+
+      nl [] x b = toLinkedFromTape $ tLnil $ x:b
+      nl (a:as) x b = toLinkedFromTape $ TNode as a $ x:b
+
+      nr a x [] = toLinkedFromTape $ tRNil $ x:a
+      nr a x (b:bs) = toLinkedFromTape $ TNode (x:a) b bs
 
       r [] = rNil $ toLinkedFromTape $ tLnil []
       r (x:xs) = rNil $ toLinkedFromTape $ TNode xs x []
