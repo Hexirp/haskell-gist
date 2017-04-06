@@ -64,10 +64,13 @@ module LinkedList
       nl (a:as) x b = toLinkedFromTape $ TNode as a $ x:b
 
       nr a x [] = toLinkedFromTape $ tRNil $ x:a
-      nr a x (b:bs) = toLinkedFromTape $ TNode (x:a) b bs
+      nr a x (b:bs) = toLinkedFromTape $ tflip TNode bs b $ x:a
 
       r [] = rNil $ toLinkedFromTape $ tLnil []
       r (x:xs) = rNil $ toLinkedFromTape $ TNode xs x []
+
+  tflip :: (a -> b -> c -> d) -> c -> b -> a -> d
+  tflip f x y z = f z y x
 
   toTapeFromLinked :: LinkedList a -> Tape a
   toTapeFromLinked (LNil () () a) = TLNil () () (traverseRight a)
