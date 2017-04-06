@@ -28,12 +28,26 @@ module LinkedList
       n = Node l x r
       r = RNil n () ()
 
+  linkedList :: (LinkedList a -> b) -> (LinkedList a -> a -> LinkedList a -> b) -> (LinkedList a -> b) -> LinkedList a -> b
+  linkedList f g h x = case x of
+    (LNil _ _ z) -> f x
+    (Node s x z) -> g s x z
+    (RNil s _ _) -> h s
+
+  lNil = LNil () ()
+
+  rNil a = RNil a () ()
+
   toLinked :: [a] -> LinkedList a
   toLinked = toLinkedFromTape . toTape
 
   data Tape a = TLNil () () [a]
               | TNode [a] a [a]
               | TRNil [a] () ()
+
+  tLnil = TLNil () ()
+
+  tRNil a = TRNil a () ()
 
   toTape :: [a] -> Tape a
   toTape = TLNil () ()
