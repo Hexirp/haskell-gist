@@ -59,3 +59,23 @@ module List
  
  streamNum :: Stream Int
  streamNum = Stream 0 $ fmap (1 +) streamNum
+
+ -- Benchmark
+
+ -- 'flat'
+ -- > flat (repeatS streamNum)
+ -- > (repeel . NotMining) (repeatS streamNum)
+ -- > repeel (NotMining (repeatS streamNum))
+ -- > (uncurry ($) . fmap repeel . mining carve peel) (NotMining (repeatS streamNum))
+ -- > (uncurry ($) . fmap repeel) (mining carve peel (NotMining (repeatS streamNum)))
+ -- > uncurry ($) (fmap repeel (mining carve peel (NotMining (repeatS streamNum))))
+ -- > uncurry ($) (fmap repeel (carve (repeatS streamNum)))
+ -- > uncurry ($) (fmap repeel (carve (Stream streamNum (repeatS streamNum))))
+ -- > uncurry ($) (fmap repeel (carve (Stream (Stream 0 $ fmap (1 +) streamNum) (repeatS streamNum))))
+ -- > uncurry ($) (fmap repeel (carve (Stream (Stream 0 (fmap (1 +) streamNum)) (repeatS streamNum))))
+ -- > uncurry ($) (fmap repeel (Stream 0, Mined (fmap (1 +) streamNum) (NotMining (repeatS streamNum))))
+ -- > uncurry ($) (Stream 0, repeel (Mined (fmap (1 +) streamNum) (NotMining (repeatS streamNum))))
+ -- > Stream 0 $ repeel (Mined (fmap (1 +) streamNum) (NotMining (repeatS streamNum)))
+ 
+ bench :: Int -> IO ()
+ bench n = print $ takeS n $ flat $ repeatS streamNum
