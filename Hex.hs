@@ -1,21 +1,37 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE PolyKinds #-}
-
 module Language.Hex where
- import Prelude
+ import Prelude (Char, String)
+ 
+ -- | Combinetors
+ --
+ -- > void <> a === void
+ --
+ -- > void >> a === a
+ -- > a >> void === a
+ --
+ -- > a <> a === a
+ -- > a <> (b <> c) === (a <> b) <> c
+ --
+ -- > a >> (b >> c) === (a >> b) >> c
+ --
+ -- > (a1 <> a2) >> b === (a1 >> b) <> (a2 >> b)
+ -- > a >> (b1 <> b2) === (a >> b1) <> (a >> b2)
+ class Combinable p where
+  void :: p
 
- data List :: * -> * where
-  Nil :: List a
-  Cons :: a -> List a -> List a
+  (<>) :: p -> p -> p
+
+  (>>) :: p -> p -> p
+
+  some :: p -> p
+  some p = p <> void
+
+  many :: p -> p
+  many p = (p >> many p) <> void
+
+  more :: p -> p
+  more p = (p >> more p) <> p
  
- data InList :: k -> List k -> * where
-  InListBase :: InList k (Cons k a)
-  InListRec :: InList a l -> InList a (Cons k l)
- 
- data Field' :: * where
-  Field :: String -> a -> Field
- 
- data MkField :: Field -> *
-  MkField :: a -> MkField (Field s a)
+ class Combinable p => Parsed p where
+  char :: Char -> p
+
+  parse :: p -> String -> (String -> r) -> (String -> r) -> r
