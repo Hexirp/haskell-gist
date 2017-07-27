@@ -1,6 +1,6 @@
 module Language.Hex where
  import Prelude (Char, String)
- 
+
  -- | Combinetors
  --
  -- > void <> a === void
@@ -30,8 +30,8 @@ module Language.Hex where
 
   more :: p -> p
   more p = (p >> more p) <> p
- 
- class Combinable p => Parsed p where
+
+ class Combinable p => Parsingable p where
   char :: Char -> p
 
-  parse :: p -> String -> (String -> r) -> (String -> r) -> r
+  parse :: p -> String -> Bool
