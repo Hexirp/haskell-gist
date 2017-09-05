@@ -16,6 +16,6 @@ module ExtensibleIO where
 
  -- | Run a subset of 'IO' by handles.
  runIOSH :: RecordOf (Interpreter IO) xs -> Eff xs a -> IO a
- runIOSH handles = deboneBy $ handleEff handles >>> \case
+ runIOSH handles = handleEff handles >>> \case
   Return a -> return a
   x :>>= f -> x >>= runIOSH handles . f
