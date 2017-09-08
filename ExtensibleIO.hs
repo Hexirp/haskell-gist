@@ -22,7 +22,7 @@ module ExtensibleIO where
   x :>>= f -> x >>= runIOSH handles . f
 
  class IOSubset kv where
-  runIOS :: Proxy kv -> Interpreter IO (AssocValue kv)
+  runIOS :: proxy kv -> Interpreter IO (AssocValue kv)
 
  getHandles :: Forall IOSubset xs => RecordOf (Interpreter IO) xs
  getHandles = htabulateFor (Proxy :: Proxy IOSubset) _
