@@ -17,3 +17,9 @@ main :: IO ()
 main = do
   let x = Cons' (AtomInt 1) (AtomInt 2)
   return ()
+
+pattern Cons'' :: CallowSExpr -> CallowSExpr -> CallowSExpr
+pattern Cons'' (CallowSExpr x) (CallowSExpr y) = Cons' x y
+
+y :: CallowSExpr
+y = Cons'' (AtomInt' 1) (AtomInt' 2)
