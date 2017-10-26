@@ -1,7 +1,7 @@
 #!/usr/bin/env stack
 -- stack --resolver lts-9.10 --install-ghc ghci
 
-{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE PatternSynonyms, ViewPatterns #-}
 
 data SExpr = Cons SExpr SExpr | AtomInt Int
 
@@ -18,8 +18,13 @@ main = do
   let x = Cons' (AtomInt 1) (AtomInt 2)
   return ()
 
+cons'' :: CallowSExpr -> Maybe (CallowSExpr, CallowSExpr)
+cons'' (Cons' x y) = Just (CallowSExpr x, CallowSExpr y)
+cons'' _           = Nothing
+
 pattern Cons'' :: CallowSExpr -> CallowSExpr -> CallowSExpr
-pattern Cons'' (CallowSExpr x) (CallowSExpr y) = Cons' x y
+pattern Cons'' x y <- (cons'' -> Just (x, y)) where 
+  Cons'' (CallowSExpr x) (CallowSExpr y) = Cons' x y
 
 y :: CallowSExpr
 y = Cons'' (AtomInt' 1) (AtomInt' 2)
