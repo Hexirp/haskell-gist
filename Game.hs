@@ -13,9 +13,9 @@ module Game where
     hSetBuffering stdout LineBuffering
     putStrLn ": Answer one natural number."
     ans <- readLn :: IO Integer
-    case 0 <= ans of
-      False -> putStrLn ": You are a baby."
-      True -> putStrLn $ ": You answered " ++ show ans ++ "."
+    putStrLn $ case 0 <= ans of
+      False -> ": You are a baby."
+      True -> ": You answered " ++ show ans ++ "."
 
   xorshift64 :: Word64 -> Word64
   xorshift64 = lShift 17 . lShift (-7) . lShift 13
