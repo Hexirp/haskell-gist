@@ -17,11 +17,10 @@ module Game where
       False -> putStrLn ": You are a baby."
       True -> putStrLn $ ": You answered " ++ show ans ++ "."
 
-    test
+  xorshift64 :: Word64 -> Word64
+  xorshift64 = lShift 17 . lShift (-7) . lShift 13
 
-  shiftWord64 :: Int -> Word64 -> Int
-  shiftWord64 x y = fromEnum $ shift y x
-
-  test :: IO ()
-  test = do
-    print $ (shiftWord64 (-1) maxBound) == (maxBound `div` 2)
+  lShift :: Int -> Word64 -> Word64
+  lShift x y
+    | 0 <= x    = shift y x
+    | otherwise = div y (2 ^ x)
