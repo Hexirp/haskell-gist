@@ -5,4 +5,9 @@ module Game where
   import Prelude
 
   main :: IO ()
-  main = putStrLn "Hello, world!"
+  main = do
+    putStrLn ": Answer one natural number."
+    ans <- readLn :: IO Integer
+    case 0 <= ans of
+      False -> putStrLn ": You are a baby."
+      True -> putStrLn $ ": You answered " ++ show ans ++ "."
