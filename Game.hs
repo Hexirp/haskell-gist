@@ -29,6 +29,14 @@ module Game where
     print $ ((2 ^ 64 - 1) `div` 2     :: Word64)
     print $ (shift (2 ^ 64 - 1) (-1)  :: Word64)
     print $ (lShift (-1) (2 ^ 64 - 1) :: Word64)
+    print $ ((2 ^ 64 - 3)             :: Word64)
+    print $ ((2 ^ 64 - 3) `div` 2     :: Word64)
+    print $ (shift (2 ^ 64 - 3) (-1)  :: Word64)
+    print $ (lShift (-1) (2 ^ 64 - 3) :: Word64)
+    print $ ((2 ^ 64 - 3)             :: Word64)
+    print $ ((2 ^ 64 - 3) `div` 4     :: Word64)
+    print $ (shift (2 ^ 64 - 3) (-2)  :: Word64)
+    print $ (lShift (-2) (2 ^ 64 - 3) :: Word64)
 
   xorshift64 :: Word64 -> Word64
   xorshift64 = lShift 17 . lShift (-7) . lShift 13
