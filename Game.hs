@@ -36,4 +36,4 @@ module Game where
   lShift :: Int -> Word64 -> Word64
   lShift x y
     | 0 <= x    = shift y x
-    | otherwise = div y (2 ^ x)
+    | otherwise = y `div` 2 ^ (-x)
