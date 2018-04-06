@@ -42,6 +42,4 @@ module Game where
   xorshift64 = lShift 17 . lShift (-7) . lShift 13
 
   lShift :: Int -> Word64 -> Word64
-  lShift x y
-    | 0 <= x    = shift y x
-    | otherwise = y `div` 2 ^ (-x)
+  lShift = flip shift
