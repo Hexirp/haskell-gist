@@ -11,14 +11,40 @@ module Game where
   main = do
     hSetBuffering stdin LineBuffering
     hSetBuffering stdout LineBuffering
-    putStrLn ": Answer one natural number."
-    ans <- readLn :: IO Integer
-    putStrLn $ game ": You answered " "." ": You are a baby" ans
+    putStrLn ": First comes rock..."
+    putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
+    ans <- getLine
+    case ans of
+      "rock" -> game
+      _ -> ": You are a baby."
 
-  game :: String -> String -> String -> Integer -> String
-  game s0 s1 s2 x
-    | 0 <= x    = s0 ++ show x ++ s1
-    | otherwise = s2
+  game :: Word64 -> IO ()
+  game rd = do
+    putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
+    ans <- getLine
+    case rd `mod` 4 of
+      0 -> do
+        putStrLn ": rock"
+        case and of
+          "rock" -> game (xorshift64 rd)
+          "scissors" -> putStrLn ": I win."
+          "paper" -> putStrLn ": You win."
+          _ -> putStrLn ": You are a baby."
+      1 -> do
+        putStrLn ": scissors"
+        case and of
+          "rock" -> putStrLn ": You win."
+          "scissors" -> game (xorshift64 rd)
+          "paper" -> putStrLn ": I win."
+          _ -> putStrLn ": You are a baby."
+      2 -> do
+        putStrLn ": paper"
+        case and of
+          "rock" -> putStrLn ": I win."
+          "scissors" -> putStrLn ": You win."
+          "paper" -> game (xorshif64 rd)
+          _ -> putStrLn ": You are a baby."
+      _ -> game (xorshift64 rd)
 
   xorshift64 :: Word64 -> Word64
   xorshift64 = lShift 17 . lShift (-7) . lShift 13
