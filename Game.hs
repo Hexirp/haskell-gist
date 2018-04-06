@@ -5,7 +5,7 @@ module Game where
   import Prelude
   import System.IO (stdin, stdout, BufferMode(..), hSetBuffering)
   import Data.Word (Word64)
-  import Data.Bits (shift)
+  import Data.Bits (shift, xor)
 
   main :: IO ()
   main = do
@@ -50,4 +50,4 @@ module Game where
   xorshift64 = lShift 17 . lShift (-7) . lShift 13
 
   lShift :: Int -> Word64 -> Word64
-  lShift = flip shift
+  lShift x y = y `xor` shift y x
