@@ -15,7 +15,7 @@ module Game where
  main = do
   hSetBuffering stdin LineBuffering
   hSetBuffering stdout LineBuffering
-  rd <- newIORef 1
+  rd <- newIORef 3
   game0 rd
 
  game0 :: IORef Word64 -> IO ()
@@ -44,11 +44,16 @@ module Game where
     battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd) ours theirs
    Nothing -> putStrLn ": You are a baby."
 
- xorshift64 :: Word64 -> Word64
- xorshift64 = xShift 17 . xShift (-7) . xShift 13
-
- xShift :: Int -> Word64 -> Word64
- xShift x y = y `xor` shift y x
+ randomHand :: IORef Word64 -> IO Hand
+ randomHand ref = do
+  rd  <- readIORef ref
+  rd' <- evaluate (xorshift64 rd)
+  writeIORef ref rd'
+  case rd `mod` 4 of
+   0 -> return Rock
+   1 -> return Scissors
+   2 -> return Paper
+   3 -> randomHand ref
 
  -- Logic
 
@@ -62,17 +67,6 @@ module Game where
 
  getHand :: IO (Maybe Hand)
  getHand = readHand <$> getLine
-
- randomHand :: IORef Word64 -> IO Hand
- randomHand ref = do
-  rd  <- readIORef ref
-  rd' <- evaluate (xorshift64 rd)
-  writeIORef ref rd'
-  case rd `mod` 4 of
-   0 -> return Rock
-   1 -> return Scissors
-   2 -> return Paper
-   3 -> randomHand ref
 
  battle :: a -> a -> a -> Hand -> Hand -> a
  battle gt lt eq x y =
@@ -89,3 +83,11 @@ module Game where
     Rock ->     gt
     Scissors -> lt
     Paper ->    eq
+
+ -- Xorshift
+
+ xorshift64 :: Word64 -> Word64
+ xorshift64 =  xShift 17 . xShift (-7) . xShift 13
+
+ xShift :: Int -> Word64 -> Word64
+ xShift x y = y `xor` shift y x
