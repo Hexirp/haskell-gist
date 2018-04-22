@@ -3,7 +3,9 @@
 
 module Game where
  import Prelude
+ import Data.IORef
  import System.IO (stdin, stdout, BufferMode(..), hSetBuffering)
+ import Control.Exception (evaluate)
  import Data.Word (Word64)
  import Data.Bits (shift, xor)
 
@@ -13,29 +15,30 @@ module Game where
  main = do
   hSetBuffering stdin LineBuffering
   hSetBuffering stdout LineBuffering
-  game0 1
+  rd <- newIORef 1
+  game0 rd
 
- game0 :: Word64 -> IO ()
+ game0 :: IORef Word64 -> IO ()
  game0 rd = do
   putStrLn ": First comes rock..."
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
   ans <- getHand
   case ans of
-   Just Rock -> game1 1
+   Just Rock -> game1 rd
    _ -> putStrLn ": You are a baby."
 
  game1 :: Word64 -> IO ()
  game1 rd = do
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
-  let (ours, rd') = randomHand rd
   ans <- getHand
   case ans of
    Just theirs -> do
+    ours <- randomHand rd
     case ours of
      Rock     -> putStrLn ": rock"
      Scissors -> putStrLn ": scissors"
      Paper    -> putStrLn ": paper"
-    battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd') ours theirs
+    battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd) ours theirs
    Nothing -> putStrLn ": You are a baby."
 
  xorshift64 :: Word64 -> Word64
@@ -57,16 +60,16 @@ module Game where
  getHand :: IO (Maybe Hand)
  getHand = readHand <$> getLine
 
- randomHand :: Word64 -> (Hand, Word64)
- randomHand rd =
-  let
-   rd' = xorshift64 rd
-  in
-   case rd `mod` 4 of
-    0 -> (Rock,     rd')
-    1 -> (Scissors, rd')
-    2 -> (Paper,    rd')
-    3 -> randomHand rd'
+ randomHand :: IORef Word64 -> IO Hand
+ randomHand ref = do
+  rd  <- readIORef ref
+  rd' <- evaluate (xorshift64 rd)
+  writeIORef ref rd'
+  case rd `mod` 4 of
+   0 -> return Rock
+   1 -> return Scissors
+   2 -> return Paper
+   3 -> randomHand ref
 
  battle :: a -> a -> a -> Hand -> Hand -> a
  battle gt lt eq x y =
