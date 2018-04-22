@@ -26,26 +26,26 @@ module Game where
     ans <- getHand
     putStrLn ": rock"
     case ans of
-     Rock     -> game (xorshift64 rd)
-     Scissors -> putStrLn ": I win."
-     Paper    -> putStrLn ": You win."
-     Other _  -> putStrLn ": You are a baby."
+     Just Rock     -> game (xorshift64 rd)
+     Just Scissors -> putStrLn ": I win."
+     Just Paper    -> putStrLn ": You win."
+     Nothing       -> putStrLn ": You are a baby."
    1 -> do
     ans <- getHand
     putStrLn ": scissors"
     case ans of
-     Rock     -> putStrLn ": You win."
-     Scissors -> game (xorshift64 rd)
-     Paper    -> putStrLn ": I win."
-     Other _  -> putStrLn ": You are a baby."
+     Just Rock     -> putStrLn ": You win."
+     Just Scissors -> game (xorshift64 rd)
+     Just Paper    -> putStrLn ": I win."
+     Nothing       -> putStrLn ": You are a baby."
    2 -> do
     ans <- getHand
     putStrLn ": paper"
     case ans of
-     Rock     -> putStrLn ": I win."
-     Scissors -> putStrLn ": You win."
-     Paper    -> game (xorshift64 rd)
-     Other _  -> putStrLn ": You are a baby."
+     Just Rock     -> putStrLn ": I win."
+     Just Scissors -> putStrLn ": You win."
+     Just Paper    -> game (xorshift64 rd)
+     Nothing       -> putStrLn ": You are a baby."
    _ -> game (xorshift64 rd)
 
  xorshift64 :: Word64 -> Word64
@@ -54,13 +54,13 @@ module Game where
  xShift :: Int -> Word64 -> Word64
  xShift x y = y `xor` shift y x
 
- data Hand = Rock | Scissors | Paper | Other String
+ data Hand = Rock | Scissors | Paper
 
- readHand :: String -> Hand
- readHand "rock"     = Rock
- readHand "scissors" = Scissors
- readHand "paper"    = Paper
- readHand x          = Other x
+ readHand :: String -> Maybe Hand
+ readHand "rock"     = Just Rock
+ readHand "scissors" = Just Scissors
+ readHand "paper"    = Just Paper
+ readHand _          = Nothing
 
- getHand :: IO Hand
+ getHand :: IO (Maybe Hand)
  getHand = readHand <$> getLine
