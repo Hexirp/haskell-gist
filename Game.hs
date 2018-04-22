@@ -47,7 +47,7 @@ module Game where
    _ -> game (xorshift64 rd)
 
  xorshift64 :: Word64 -> Word64
- xorshift64 = lShift 17 . lShift (-7) . lShift 13
+ xorshift64 = xShift 17 . xShift (-7) . xShift 13
 
- lShift :: Int -> Word64 -> Word64
- lShift x y = y `xor` shift y x
+ xShift :: Int -> Word64 -> Word64
+ xShift x y = y `xor` shift y x
