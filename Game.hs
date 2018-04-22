@@ -39,11 +39,11 @@ module Game where
      _ -> putStrLn ": You are a baby."
    2 -> do
     putStrLn ": paper"
-     case ans of
-      "rock" -> putStrLn ": I win."
-      "scissors" -> putStrLn ": You win."
-      "paper" -> game (xorshift64 rd)
-      _ -> putStrLn ": You are a baby."
+    case ans of
+     "rock" -> putStrLn ": I win."
+     "scissors" -> putStrLn ": You win."
+     "paper" -> game (xorshift64 rd)
+     _ -> putStrLn ": You are a baby."
    _ -> game (xorshift64 rd)
 
  xorshift64 :: Word64 -> Word64
