@@ -24,11 +24,14 @@ module Game where
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
   ans <- getHand
   case ans of
-   Just Rock -> game1 rd
+   Just Rock -> do
+    putStrLn ": rock"
+    game1 rd
    _ -> putStrLn ": You are a baby."
 
  game1 :: IORef Word64 -> IO ()
  game1 rd = do
+  putStrLn ""
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
   ans <- getHand
   case ans of
