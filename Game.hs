@@ -7,6 +7,8 @@ module Game where
  import Data.Word (Word64)
  import Data.Bits (shift, xor)
 
+ -- Application
+
  main :: IO ()
  main = do
   hSetBuffering stdin LineBuffering
@@ -54,6 +56,8 @@ module Game where
  xShift :: Int -> Word64 -> Word64
  xShift x y = y `xor` shift y x
 
+ -- Logic
+
  data Hand = Rock | Scissors | Paper
 
  readHand :: String -> Maybe Hand
@@ -64,3 +68,30 @@ module Game where
 
  getHand :: IO (Maybe Hand)
  getHand = readHand <$> getLine
+
+ randomHand :: Word64 -> (Hand, Word64)
+ randomHand rd =
+  let
+   rd' = xorshift64 rd
+  in
+   case rd `mod` 4 of
+    0 -> (Rock,     rd')
+    1 -> (Scissors, rd')
+    2 -> (Paper,    rd')
+    3 -> randomHand rd'
+
+ battle :: a -> a -> a -> Hand -> Hand -> a
+ battle gt lt eq x y =
+  case x of
+   Rock ->     case y of
+    Rock ->     eq
+    Scissors -> gt
+    Paper ->    lt
+   Scissors -> case y of
+    Rock ->     lt
+    Scissors -> eq
+    Paper ->    gt
+   Paper ->    case y of
+    Rock ->     gt
+    Scissors -> lt
+    Paper ->    eq
