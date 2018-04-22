@@ -21,29 +21,29 @@ module Game where
  game :: Word64 -> IO ()
  game rd = do
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
-  ans <- getLine
+  ans <- getHand
   case rd `mod` 4 of
    0 -> do
     putStrLn ": rock"
     case ans of
-     "rock" -> game (xorshift64 rd)
-     "scissors" -> putStrLn ": I win."
-     "paper" -> putStrLn ": You win."
-     _ -> putStrLn ": You are a baby."
+     Rock     -> game (xorshift64 rd)
+     Scissors -> putStrLn ": I win."
+     Paper    -> putStrLn ": You win."
+     Other _  -> putStrLn ": You are a baby."
    1 -> do
     putStrLn ": scissors"
     case ans of
-     "rock" -> putStrLn ": You win."
-     "scissors" -> game (xorshift64 rd)
-     "paper" -> putStrLn ": I win."
-     _ -> putStrLn ": You are a baby."
+     Rock     -> putStrLn ": You win."
+     Scissors -> game (xorshift64 rd)
+     Paper    -> putStrLn ": I win."
+     Other _  -> putStrLn ": You are a baby."
    2 -> do
     putStrLn ": paper"
     case ans of
-     "rock" -> putStrLn ": I win."
-     "scissors" -> putStrLn ": You win."
-     "paper" -> game (xorshift64 rd)
-     _ -> putStrLn ": You are a baby."
+     Rock     -> putStrLn ": I win."
+     Scissors -> putStrLn ": You win."
+     Paper    -> game (xorshift64 rd)
+     Other _  -> putStrLn ": You are a baby."
    _ -> game (xorshift64 rd)
 
  xorshift64 :: Word64 -> Word64
@@ -51,3 +51,14 @@ module Game where
 
  xShift :: Int -> Word64 -> Word64
  xShift x y = y `xor` shift y x
+
+ data Hand = Rock | Scissors | Paper | Other String
+
+ readHand :: String -> Hand
+ readHand "rock"     = Rock
+ readHand "scissors" = Scissors
+ readHand "paper"    = Paper
+ readHand x          = Other x
+
+ getHand :: IO Hand
+ getHand = readHand <$> getLine
