@@ -21,9 +21,9 @@ module Game where
  game :: Word64 -> IO ()
  game rd = do
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
-  ans <- getHand
   case rd `mod` 4 of
    0 -> do
+    ans <- getHand
     putStrLn ": rock"
     case ans of
      Rock     -> game (xorshift64 rd)
@@ -31,6 +31,7 @@ module Game where
      Paper    -> putStrLn ": You win."
      Other _  -> putStrLn ": You are a baby."
    1 -> do
+    ans <- getHand
     putStrLn ": scissors"
     case ans of
      Rock     -> putStrLn ": You win."
@@ -38,6 +39,7 @@ module Game where
      Paper    -> putStrLn ": I win."
      Other _  -> putStrLn ": You are a baby."
    2 -> do
+    ans <- getHand
     putStrLn ": paper"
     case ans of
      Rock     -> putStrLn ": I win."
