@@ -15,9 +15,9 @@ module Game where
   hSetBuffering stdout LineBuffering
   putStrLn ": First comes rock..."
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
-  ans <- getLine
+  ans <- getHand
   case ans of
-   "rock" -> game 1
+   Just Rock -> game 1
    _ -> putStrLn ": You are a baby."
 
  game :: Word64 -> IO ()
