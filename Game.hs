@@ -23,32 +23,16 @@ module Game where
  game :: Word64 -> IO ()
  game rd = do
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
-  case rd `mod` 4 of
-   0 -> do
-    ans <- getHand
-    putStrLn ": rock"
-    case ans of
-     Just Rock     -> game (xorshift64 rd)
-     Just Scissors -> putStrLn ": I win."
-     Just Paper    -> putStrLn ": You win."
-     Nothing       -> putStrLn ": You are a baby."
-   1 -> do
-    ans <- getHand
-    putStrLn ": scissors"
-    case ans of
-     Just Rock     -> putStrLn ": You win."
-     Just Scissors -> game (xorshift64 rd)
-     Just Paper    -> putStrLn ": I win."
-     Nothing       -> putStrLn ": You are a baby."
-   2 -> do
-    ans <- getHand
-    putStrLn ": paper"
-    case ans of
-     Just Rock     -> putStrLn ": I win."
-     Just Scissors -> putStrLn ": You win."
-     Just Paper    -> game (xorshift64 rd)
-     Nothing       -> putStrLn ": You are a baby."
-   _ -> game (xorshift64 rd)
+  let (ours, rd') = randomHand rd
+  ans <- getHand
+  case ans of
+   Just theirs -> do
+    case ours of
+     Rock     -> putStrLn ": rock"
+     Scissors -> putStrLn ": scissors"
+     Paper    -> putStrLn ": paper"
+    battle (putStrLn ": I win.") (putStrLn ": You win.") (game rd') ours theirs
+   Nothing -> putStrLn ": You are a baby."
 
  xorshift64 :: Word64 -> Word64
  xorshift64 = xShift 17 . xShift (-7) . xShift 13
