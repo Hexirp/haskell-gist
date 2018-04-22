@@ -13,15 +13,19 @@ module Game where
  main = do
   hSetBuffering stdin LineBuffering
   hSetBuffering stdout LineBuffering
+  game0 1
+
+ game0 :: Word64 -> IO ()
+ game0 rd = do
   putStrLn ": First comes rock..."
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
   ans <- getHand
   case ans of
-   Just Rock -> game 1
+   Just Rock -> game1 1
    _ -> putStrLn ": You are a baby."
 
- game :: Word64 -> IO ()
- game rd = do
+ game1 :: Word64 -> IO ()
+ game1 rd = do
   putStrLn ": Say \"rock\", \"scissors\", or \"paper\"."
   let (ours, rd') = randomHand rd
   ans <- getHand
@@ -31,7 +35,7 @@ module Game where
      Rock     -> putStrLn ": rock"
      Scissors -> putStrLn ": scissors"
      Paper    -> putStrLn ": paper"
-    battle (putStrLn ": I win.") (putStrLn ": You win.") (game rd') ours theirs
+    battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd') ours theirs
    Nothing -> putStrLn ": You are a baby."
 
  xorshift64 :: Word64 -> Word64
