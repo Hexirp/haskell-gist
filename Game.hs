@@ -37,10 +37,7 @@ module Game where
   case ans of
    Just theirs -> do
     ours <- randomHand rd
-    case ours of
-     Rock     -> putStrLn ": rock"
-     Scissors -> putStrLn ": scissors"
-     Paper    -> putStrLn ": paper"
+    putStrLn $ ": " ++ showHand ours
     battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd) ours theirs
    Nothing -> putStrLn ": You are a baby."
 
@@ -49,7 +46,7 @@ module Game where
   rd  <- readIORef ref
   rd' <- evaluate (xorshift64 rd)
   writeIORef ref rd'
-  case rd `mod` 4 of
+  case rd' `mod` 4 of
    0 -> return Rock
    1 -> return Scissors
    2 -> return Paper
@@ -67,6 +64,11 @@ module Game where
 
  getHand :: IO (Maybe Hand)
  getHand = readHand <$> getLine
+ 
+ showHand :: Hand -> String
+ showHand Rock     = "rock"
+ showHand Scissors = "scissors"
+ showHand Paper    = "paper"
 
  battle :: a -> a -> a -> Hand -> Hand -> a
  battle gt lt eq x y =
