@@ -3,7 +3,7 @@
 
 module Game where
  import Prelude
- import Data.IORef
+ import Data.IORef (IORef, newIORef, readIORef, writeIORef)
  import System.IO (stdin, stdout, BufferMode(..), hSetBuffering)
  import Control.Exception (evaluate)
  import Data.Word (Word64)
