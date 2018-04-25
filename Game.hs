@@ -38,7 +38,12 @@ module Game where
    Just theirs -> do
     ours <- randomHand rd
     putStrLn $ ": " ++ showHand ours
-    battle (putStrLn ": I win.") (putStrLn ": You win.") (game1 rd) ours theirs
+    battle
+        (putStrLn ": I win.")
+        (putStrLn ": You win.")
+        (game1 rd)
+        ours
+        theirs
    Nothing -> putStrLn ": You are a baby."
 
  randomHand :: IORef Word64 -> IO Hand
