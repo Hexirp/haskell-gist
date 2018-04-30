@@ -46,17 +46,6 @@ module Game where
         theirs
    Nothing -> putStrLn ": You are a baby."
 
- randomHand :: IORef Word64 -> IO Hand
- randomHand ref = do
-  rd  <- readIORef ref
-  rd' <- evaluate (xorshift64 rd)
-  writeIORef ref rd'
-  case rd' `mod` 4 of
-   0 -> return Rock
-   1 -> return Scissors
-   2 -> return Paper
-   3 -> randomHand ref
-
  -- Logic
 
  data Hand = Rock | Scissors | Paper
@@ -74,6 +63,17 @@ module Game where
  showHand Rock     = "rock"
  showHand Scissors = "scissors"
  showHand Paper    = "paper"
+
+ randomHand :: IORef Word64 -> IO Hand
+ randomHand ref = do
+  rd  <- readIORef ref
+  rd' <- evaluate (xorshift64 rd)
+  writeIORef ref rd'
+  case rd' `mod` 4 of
+   0 -> return Rock
+   1 -> return Scissors
+   2 -> return Paper
+   3 -> randomHand ref
 
  battle :: a -> a -> a -> Hand -> Hand -> a
  battle gt lt eq x y =
