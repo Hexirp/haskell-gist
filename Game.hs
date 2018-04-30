@@ -66,10 +66,8 @@ module Game where
 
  randomHand :: IORef Word64 -> IO Hand
  randomHand ref = do
-  rd  <- readIORef ref
-  rd' <- evaluate (xorshift64 rd)
-  writeIORef ref rd'
-  case rd' `mod` 4 of
+  rd <- fetch ref
+  case rd `mod` 4 of
    0 -> return Rock
    1 -> return Scissors
    2 -> return Paper
@@ -94,7 +92,14 @@ module Game where
  -- Xorshift
 
  xorshift64 :: Word64 -> Word64
- xorshift64 =  xShift 17 . xShift (-7) . xShift 13
+ xorshift64 = xShift 17 . xShift (-7) . xShift 13
 
  xShift :: Int -> Word64 -> Word64
  xShift x y = y `xor` shift y x
+
+ fetch :: IORef Word64 -> IO Word64
+ fetch ref = do
+  w  <- readIORef ref
+  w' <- evaluate (xorshift64 w)
+  writeIORef ref w'
+  return w'
