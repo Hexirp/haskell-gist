@@ -22,3 +22,12 @@ module PrPe where
   -- It's impossible case, but I have good answer.
  lines2_f x []       = (x : []) : []
  lines2_f x (y : ys) = (x : y) : ys
+ 
+ lines3 :: String -> [String]
+ lines3 []          = []
+ lines3 ('\n' : xs) = [] : lines3 xs
+ lines3 (x    : xs) = lines3_f x (lines2 xs)
+
+ lines3_f :: Char -> [String] -> [String]
+ lines3_f x []       = (x : []) : []
+ lines3_f x (y : ys) = (x : y) : ys
