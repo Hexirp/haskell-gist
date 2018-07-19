@@ -61,3 +61,14 @@ module PrPe where
   go acc []          = reverse acc : []
   go acc ('\n' : xs) = reverse acc : go [] xs
   go acc (x    : xs) = go (x : acc) xs
+
+ -- 正格
+ test1 :: (String -> [String]) -> Int -> IO ()
+ test1 f n = let src = src1 n in print src >> print (f src)
+
+ src1 :: String
+ src1 = concat $ replicate n (loop n ('a' :) "\n")
+
+ loop :: Int -> (a -> a) -> a -> a
+ loop 0 _ x = x
+ loop n f x = f (loop (n - 1) f x)
