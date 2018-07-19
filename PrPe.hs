@@ -16,9 +16,9 @@ module PrPe where
  -- lines2 "\n" = ["",""]
  -- lines3 "\n" = [""]
  --
- -- lines1 "aaa\n" = ["aaa",""]
- -- lines2 "aaa\n" = ["aaa",""]
- -- lines3 "aaa\n" = ["aaa"]
+ -- lines1 "\n\n" = ["","",""]
+ -- lines2 "\n\n" = ["","",""]
+ -- lines3 "\n\n" = ["",""]
 
  lines1 :: String -> [String]
  lines1 = go id where
