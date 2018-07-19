@@ -48,7 +48,7 @@ module PrPe where
 
  lines4 :: String -> [String]
  lines4 = go [] where
-  go :: String -> [String] -> [String]
+  go :: String -> String -> [String]
   go acc []          = acc : []
   go acc ('\n' : xs) = acc : xs
   go acc (x    : xs) = go (acc ++ (x : [])) xs
