@@ -67,7 +67,7 @@ module PrPe where
  test1 f n = let src = src1 n in print src >> print (f src)
 
  src1 :: String
- src1 = concat $ replicate n (loop n ('a' :) "\n")
+ src1 n = concat $ replicate n (loop n ('a' :) "\n")
 
  loop :: Int -> (a -> a) -> a -> a
  loop 0 _ x = x
