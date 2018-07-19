@@ -19,6 +19,8 @@ module PrPe where
  -- lines1 "\n\n" = ["","",""]
  -- lines2 "\n\n" = ["","",""]
  -- lines3 "\n\n" = ["",""]
+ --
+ -- lines1 === lines4, but lines4 is wrong.
 
  lines1 :: String -> [String]
  lines1 = go id where
