@@ -6,6 +6,20 @@ module PrPe where
  escape ('\\' : xs) = '\\' : '\\' : escape xs
  escape (x    : xs) = x : escape xs
 
+ -- lines1 === lines2
+ --
+ -- lines1 "" = [""]
+ -- lines2 "" = [""]
+ -- lines3 "" = []
+ --
+ -- lines1 "\n" = ["",""]
+ -- lines2 "\n" = ["",""]
+ -- lines3 "\n" = [""]
+ --
+ -- lines1 "aaa\n" = ["aaa",""]
+ -- lines2 "aaa\n" = ["aaa",""]
+ -- lines3 "aaa\n" = ["aaa"]
+
  lines1 :: String -> [String]
  lines1 = go id where
   go :: (String -> String) -> String -> [String]
