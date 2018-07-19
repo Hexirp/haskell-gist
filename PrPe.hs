@@ -53,4 +53,11 @@ module PrPe where
   go :: String -> String -> [String]
   go acc []          = acc : []
   go acc ('\n' : xs) = acc : go [] xs
-  go acc (x    : xs) = go (acc ++ (x : [])) xs
+  go acc (x    : xs) = go (acc ++ x : []) xs
+
+ lines5 :: String -> [String]
+ lines5 = go [] where
+  go :: Stirng -> String -> [String]
+  go acc []          = reverse acc : []
+  go acc ('\n' : xs) = reverse acc : go [] xs
+  go acc (x    : xs) = go (x : acc) xs
