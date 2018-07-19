@@ -45,3 +45,10 @@ module PrPe where
  lines3_f :: Char -> [String] -> [String]
  lines3_f x []       = (x : []) : []
  lines3_f x (y : ys) = (x : y) : ys
+
+ lines4 :: String -> [String]
+ lines4 = go [] where
+  go :: String -> [String] -> [String]
+  go acc []          = acc : []
+  go acc ('\n' : xs) = acc : xs
+  go acc (x    : xs) = go (acc ++ (x : [])) xs
