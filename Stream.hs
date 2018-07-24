@@ -18,3 +18,8 @@ module Stream where
 
  sConsM :: Monad m => m a -> Streamly m a -> Streamly m a
  sConsM mx xs = Streamly $ \_ inCons -> join $ inCons <$> mx <*> pure xs
+
+ (|:) :: Monad m => m a -> Streamly m a -> Streamly m a
+ (|:) = sConsM
+
+ infixr 5 |:
