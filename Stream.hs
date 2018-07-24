@@ -66,7 +66,7 @@ module Stream where
  iDone = Iteratee $ \done _ _ -> done
  
  iYield :: a -> Iteratee s m a -> Iteratee s m a
- iYield xv xs = Iteratee $ \_ yield _ -> yield x xs
+ iYield xv xs = Iteratee $ \_ yield _ -> yield xv xs
 
  iAwait :: (s -> Iteratee s m a) -> Iteratee s m a
  iAwait xw = Iteratee $ \_ _ await -> await xw
