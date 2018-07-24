@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Stream where
  import Prelude
  
