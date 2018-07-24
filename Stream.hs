@@ -52,3 +52,64 @@ module Stream where
    Stream $ \inNil inCons ->
     unStream x inNil $ \xv xs ->
      unStream (f xv <> (xs >>= f)) inNil inCons
+
+ newtype Iteratee s m a =
+  Iteratee {
+   unIteratee :: forall r.
+    m r
+    (a -> Iteratee s m a -> m r) ->
+    ((s -> Iteratee s m a) -> m r) ->
+    m r
+  }
+ 
+ iDone :: Iteratee s m a
+ iDone = Iteratee $ \done _ _ -> done
+ 
+ iYield :: a -> Iteratee s m a -> Iteratee s m a
+ iYield xv xs = Iteratee $ \_ yield _ -> yield x xs
+
+ iAwait :: (s -> Iteratee s m a) -> Iteratee s m a
+ iAwait xw = Iteratee $ \_ _ await -> await xw
+
+ iYieldM :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
+ iYieldM mxv xs = Iteratee $ \_ yield _ -> join $ yield <$> mxv <*> pure xs
+
+ (+:) :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
+ (+:) = iYieldM
+
+ instance Semigroup (Iteratee s m a) where
+  x <> y =
+   Iteratee $ \done yield await ->
+    unIteratee x
+     (unIteratee y done yield await)
+     (\xv xs -> yield xv (xs <> y))
+     (\xw -> await (\s -> xw s <> y))
+
+ instance Monoid (Iteratee s m a) where
+  mempty = iDone
+
+ instance Functor (Iteratee s m) where
+  fmap f x = 
+   Iteratee $ \done yield await ->
+    unIteratee x
+     done
+     (\xv xs -> yield (f xv) (fmap f xs))
+     (\xw -> await (\s -> fmap f (xw s)))
+ 
+ instance Applicative (Iteratee s m) where
+  pure x = iYield x iDone
+
+  f <*> x =
+   Iteratee $ \done yield await ->
+    unIteratee f
+     done
+     (\fv fs -> unIteratee (fmap fv x <> (fs <*> x)) done yield await)
+     (\fw -> await (\s -> fw s <*> x))
+ 
+ instance Monad (Iteratee s m) where
+  x >>= f =
+   Iteratee $ \done yield await ->
+    unIteratee x
+     done
+     (\xv xs -> unIteratee (f xv <> (xs >>= f)) done yield await)
+     (\xw -> await (\s -> xw s >>= f))
