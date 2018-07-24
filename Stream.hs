@@ -56,7 +56,7 @@ module Stream where
  newtype Iteratee s m a =
   Iteratee {
    unIteratee :: forall r.
-    m r
+    m r ->
     (a -> Iteratee s m a -> m r) ->
     ((s -> Iteratee s m a) -> m r) ->
     m r
