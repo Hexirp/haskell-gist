@@ -119,7 +119,7 @@ module Stream where
   Iteratee $ \done yield await ->
    unIteratee x
     done
-    (\xv xs -> iGive xv (iCompose xs y))
+    (\xv xs -> unIteratee (iGive xv (iCompose xs y)) done yield await)
     (\xw -> await (\s -> iCompose (xw s) y))
 
  iGive :: s -> Iteratee s m a -> Iteratee s m a
