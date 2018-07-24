@@ -23,3 +23,28 @@ module Stream where
  (|:) = sConsM
 
  infixr 5 |:
+
+ instance Semigroup (Streamly m a) where
+  x <> y =
+   Streamly $ \inNil inCons ->
+    unStreamly x (unStreamly y inNil inCons) (\xv xs -> inCons xv (xs <> y))
+
+ instance Monoid (Streamly m a) where
+  mempty = sNil
+
+ instance Functor (Streamly m) where
+  fmap f x =
+   Streamly $ \inNil inCons ->
+    unStreamly x inNil (\xv xs -> inCons (f xv) (fmap f xs))
+
+ instance Applicative (Streamly m) where
+  pure x = sCons x sNil
+
+  f <*> x =
+   Streamly $ \inNil inCons ->
+    unStreamly f inNil (\fv fs -> fmap fv x <> (fs <*> x))
+
+ instance Monad (Streamly m) where
+  x >>= f =
+   Streamly $ \inNil inCons ->
+    unStreamly x inNil (\xv xs -> f xv <> (xs >>= f))
