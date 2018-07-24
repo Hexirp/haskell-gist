@@ -113,3 +113,13 @@ module Stream where
      done
      (\xv xs -> unIteratee (f xv <> (xs >>= f)) done yield await)
      (\xw -> await (\s -> xw s >>= f))
+
+ iCompose :: Iteratee a m b -> Iteratee b m c -> Iteratee a m c
+ iCompose x y =
+  Iteratee $ \done yield await ->
+   unIteratee x
+    done
+    (\xv xs -> _)
+    (\xw -> await (\s -> iCompose (xw s) y)
+
+ iCompose_ :: Iteratee b m c -> Iteratee a m c
