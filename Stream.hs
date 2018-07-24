@@ -5,50 +5,50 @@ module Stream where
  
  import Control.Monad (join)
 
- newtype Streamly m a =
-  Streamly {
-   unStreamly :: forall r. m r -> (a -> Streamly m a -> m r) -> m r
+ newtype Stream m a =
+  Stream {
+   unStream :: forall r. m r -> (a -> Stream m a -> m r) -> m r
   }
 
- sNil :: Streamly m a
- sNil = Streamly $ \inNil _ -> inNil
+ sNil :: Stream m a
+ sNil = Stream $ \inNil _ -> inNil
 
- sCons :: a -> Streamly m a -> Streamly m a
- sCons x xs = Streamly $ \_ inCons -> inCons x xs
+ sCons :: a -> Stream m a -> Stream m a
+ sCons x xs = Stream $ \_ inCons -> inCons x xs
 
- sConsM :: Monad m => m a -> Streamly m a -> Streamly m a
- sConsM mx xs = Streamly $ \_ inCons -> join $ inCons <$> mx <*> pure xs
+ sConsM :: Monad m => m a -> Stream m a -> Stream m a
+ sConsM mx xs = Stream $ \_ inCons -> join $ inCons <$> mx <*> pure xs
 
- (|:) :: Monad m => m a -> Streamly m a -> Streamly m a
+ (|:) :: Monad m => m a -> Stream m a -> Stream m a
  (|:) = sConsM
 
  infixr 5 |:
 
- instance Semigroup (Streamly m a) where
+ instance Semigroup (Stream m a) where
   x <> y =
-   Streamly $ \inNil inCons ->
-    unStreamly x (unStreamly y inNil inCons) $ \xv xs ->
+   Stream $ \inNil inCons ->
+    unStream x (unStream y inNil inCons) $ \xv xs ->
      inCons xv (xs <> y)
 
- instance Monoid (Streamly m a) where
+ instance Monoid (Stream m a) where
   mempty = sNil
 
- instance Functor (Streamly m) where
+ instance Functor (Stream m) where
   fmap f x =
-   Streamly $ \inNil inCons ->
-    unStreamly x inNil $ \xv xs ->
+   Stream $ \inNil inCons ->
+    unStream x inNil $ \xv xs ->
      inCons (f xv) (fmap f xs)
 
- instance Applicative (Streamly m) where
+ instance Applicative (Stream m) where
   pure x = sCons x sNil
 
   f <*> x =
-   Streamly $ \inNil inCons ->
-    unStreamly f inNil $ \fv fs ->
-     unStreamly (fmap fv x <> (fs <*> x)) inNil inCons
+   Stream $ \inNil inCons ->
+    unStream f inNil $ \fv fs ->
+     unStream (fmap fv x <> (fs <*> x)) inNil inCons
 
- instance Monad (Streamly m) where
+ instance Monad (Stream m) where
   x >>= f =
-   Streamly $ \inNil inCons ->
-    unStreamly x inNil $ \xv xs ->
-     unStreamly (f xv <> (xs >>= f)) inNil inCons
+   Stream $ \inNil inCons ->
+    unStream x inNil $ \xv xs ->
+     unStream (f xv <> (xs >>= f)) inNil inCons
