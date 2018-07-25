@@ -24,6 +24,12 @@ module Stream where
 
  infixr 5 |:
 
+ sCons' :: a -> Stream m a
+ sCons' x = sCons x sNil
+
+ sConsM' :: m a -> Stream m a
+ sConsM' mx = sConsM mx sNil
+
  instance Semigroup (Stream m a) where
   x <> y =
    Stream $ \inNil inCons ->
@@ -53,6 +59,9 @@ module Stream where
     unStream x inNil $ \xv xs ->
      unStream (f xv <> (xs >>= f)) inNil inCons
 
+ sRun :: Stream IO () -> IO ()
+ sRun x = unStream x (return ()) (\_ xs -> sRun xs)
+
  newtype Iteratee s m a =
   Iteratee {
    unIteratee :: forall r.
@@ -74,8 +83,14 @@ module Stream where
  iYieldM :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
  iYieldM mxv xs = Iteratee $ \_ yield _ -> join $ yield <$> mxv <*> pure xs
 
- (+:) :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
- (+:) = iYieldM
+ iYield' :: a -> Iteratee s m a
+ iYield' x = iYield x iDone
+
+ iAwait' :: Iteratee s m s
+ iAwait' = iAwait (\s -> iYield s iDone)
+
+ iYieldM' :: m a -> Iteratee s m a
+ iYieldM' mx = iYieldM mx iDone
 
  instance Semigroup (Iteratee s m a) where
   x <> y =
@@ -129,3 +144,6 @@ module Stream where
     done
     (\xv xs -> yield xv (iGive s xs))
     (\xw -> unIteratee (xw s) done yield await)
+
+ iRun :: Iteratee () IO () -> IO ()
+ iRun x = unIteratee x (return ()) (\_ xs -> iRun xs) (\xw -> iRun (xw ()))
