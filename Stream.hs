@@ -83,15 +83,6 @@ module Stream where
  iYieldM :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
  iYieldM mxv xs = Iteratee $ \_ yield _ -> join $ yield <$> mxv <*> pure xs
 
- iYield' :: a -> Iteratee s m a
- iYield' x = iYield x iDone
-
- iAwait' :: Iteratee s m s
- iAwait' = iAwait (\s -> iYield s iDone)
-
- iYieldM' :: Monad m => m a -> Iteratee s m a
- iYieldM' mx = iYieldM mx iDone
-
  instance Semigroup (Iteratee s m a) where
   x <> y =
    Iteratee $ \done yield await ->
@@ -132,18 +123,18 @@ module Stream where
  iCompose :: Iteratee a m b -> Iteratee b m c -> Iteratee a m c
  iCompose x y =
   Iteratee $ \done yield await ->
-   unIteratee x
+   unIteratee y
     done
-    (\xv xs -> unIteratee (iCompose xs (iGive xv y)) done yield await)
-    (\xw -> await (\s -> iCompose (xw s) y))
+    (\yv ys -> yield yv (iCompose x ys))
+    (\yw -> unIteratee (iCompose' x yw) done yield await)
 
- iGive :: s -> Iteratee s m a -> Iteratee s m a
- iGive s x =
+ iCompose' :: Iteratee a m b -> (b -> Iteratee b m c) -> Iteratee a m c
+ iCompose' x yw =
   Iteratee $ \done yield await ->
    unIteratee x
     done
-    (\xv xs -> yield xv (iGive s xs))
-    (\xw -> unIteratee (xw s) done yield await)
+    (\xv xs -> unIteratee (iCompose xs (yw xv)) done yield await)
+    (\xw -> await (\s -> iCompose' (xw s) yw))
 
  iRun :: Iteratee () IO () -> IO ()
  iRun x = unIteratee x (return ()) (\_ xs -> iRun xs) (\xw -> iRun (xw ()))
