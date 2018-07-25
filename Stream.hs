@@ -27,7 +27,7 @@ module Stream where
  sCons' :: a -> Stream m a
  sCons' x = sCons x sNil
 
- sConsM' :: m a -> Stream m a
+ sConsM' :: Monad m => m a -> Stream m a
  sConsM' mx = sConsM mx sNil
 
  instance Semigroup (Stream m a) where
@@ -89,7 +89,7 @@ module Stream where
  iAwait' :: Iteratee s m s
  iAwait' = iAwait (\s -> iYield s iDone)
 
- iYieldM' :: m a -> Iteratee s m a
+ iYieldM' :: Monad m => m a -> Iteratee s m a
  iYieldM' mx = iYieldM mx iDone
 
  instance Semigroup (Iteratee s m a) where
