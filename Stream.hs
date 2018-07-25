@@ -83,6 +83,14 @@ module Stream where
  iYieldM :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
  iYieldM mxv xs = Iteratee $ \_ yield _ -> join $ yield <$> mxv <*> pure xs
 
+ iMapSrc :: (s -> t) -> Iteratee t m a -> Iteratee s m a
+ iMapSrc f x =
+  Iteratee $ \done yield await ->
+   unIteratee x
+    done
+    (\xv xs -> yield xv (iMapSrc f xs))
+    (\xw -> await (\s -> xw (f s))
+
  instance Semigroup (Iteratee s m a) where
   x <> y =
    Iteratee $ \done yield await ->
@@ -138,3 +146,78 @@ module Stream where
 
  iRun :: Iteratee () IO () -> IO ()
  iRun x = unIteratee x (return ()) (\_ xs -> iRun xs) (\xw -> iRun (xw ()))
+
+ newtype Conduit i o u m a =
+  Conduit {
+   unConduit :: forall r.
+    (a -> m r) ->
+    (o -> Conduit i o u m a -> m r) ->
+    ((i -> Conduit i o u m a) -> (u -> Conduit i o u m a) -> m r) ->
+    m r
+  }
+
+ cDone :: a -> Conduit i o u m a
+ cDone xv = Conduit $ \done _ _ -> done x
+
+ cYield :: o -> Conduit i o u m a -> Conduit i o u m a
+ cYield xo xs = Conduit $ \_ yield _ -> yield o p
+
+ cAwait :: (i -> Conduit i o u m a) -> (u -> Conduit i o u m a) -> Conduit i o u m a
+ cAwait xp xc = Conduit $ \_ _ await -> await xp xc
+
+ cYieldM :: Monad m => m o -> Conduit i o u m a -> Conduit i o u m a
+ cYieldM mxo xs = Conduit $ \_ yield _ -> join $ yield <$> mxo <*> pure xs
+
+ cYield' :: o -> Conduit i o u m ()
+ cYield' xo = cYield xo (cDone ())
+
+ cAwait' :: (i -> Conduit i o () m ()) -> Conduit i o () m ()
+ cAwait' xp = cAwait xp (\_ -> cDone ())
+
+ cYieldM' :: Monad m => m o -> Conduit i o u m ()
+ cYieldM' mxo = cYieldM mxo (cDone ())
+
+ instance Functor (Conduit i o u m) where
+  fmap f x =
+   Conduit $ \done yield await ->
+    unConduit x
+     (\xv -> done (f x))
+     (\xo xs -> yield xo (fmap f xs))
+     (\xp xc -> await (\i -> fmap f (xp i)) (\u -> fmap f (xc u)))
+
+ instance Applicative (Conduit i o u m) where
+  pure x = cDone x
+
+  f <*> x =
+   Conduit $ \done yield await ->
+    unConduit f
+     (\fv -> unConduit (fmap fv x) done yield await)
+     (\fo fs -> yield fo (fs <*> x))
+     (\fp fc -> await (\i -> fp i <*> x) (\u -> fc u <*> x))
+ 
+ instance Monad (Conduit i o u m) where
+  x >>= f =
+   Conduit $ \done yield await ->
+    unConduit x
+     (\xv -> unConduit (f xv) done yield await)
+     (\xo xs -> yield xo (xs >>= f))
+     (\xp xc -> await (\i -> xp i >>= f) (\i -> xc i >>= f))
+ 
+ cCompose :: Conduit a c b m d -> Conduit c e d m f -> Conduit a e b m f
+ cCompose x y =
+  Conduit $ \done yield await ->
+   unConduit y
+    (\yv -> done yv)
+    (\yo ys -> yield yo (cCompose x ys))
+    (\yp yc -> unConduit (cCompose' x yp yc) done yield await)
+
+ cCompose' :: Conduit a c b m d -> (c -> Conduit c e d m f) -> (d -> Conduit c e d m f) -> Conduit a e b m f
+ cCompose' x yp yc =
+  Conduit $ \done yield await ->
+   unConduit x
+    (\xv -> unConduit (cCompose (cDone xv) (yc xv)) done yield await)
+    (\xo xs -> unConduit (cCompose xs (yp xo)) done yield await)
+    (\xp xc -> await (\i -> cCompose' (xp i) yp yc) (\u -> cCompose' (xc u) yp yc))
+ 
+ cRun :: Conduit () () () IO () -> IO ()
+ cRun x = unConduit x (\xv -> return xv) (\_ xs -> cRun xs) (\xp _ -> xp ())
