@@ -89,7 +89,7 @@ module Stream where
    unIteratee x
     done
     (\xv xs -> yield xv (iMapSrc f xs))
-    (\xw -> await (\s -> xw (f s))
+    (\xw -> await (\s -> xw (f s)))
 
  instance Semigroup (Iteratee s m a) where
   x <> y =
