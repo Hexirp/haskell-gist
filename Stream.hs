@@ -89,7 +89,7 @@ module Stream where
    unIteratee x
     done
     (\xv xs -> yield xv (iMapSrc f xs))
-    (\xw -> await (\s -> xw (f s)))
+    (\xw -> await (\s -> iMapSrc f (xw (f s))))
 
  instance Semigroup (Iteratee s m a) where
   x <> y =
@@ -157,10 +157,10 @@ module Stream where
   }
 
  cDone :: a -> Conduit i o u m a
- cDone xv = Conduit $ \done _ _ -> done x
+ cDone xv = Conduit $ \done _ _ -> done xv
 
  cYield :: o -> Conduit i o u m a -> Conduit i o u m a
- cYield xo xs = Conduit $ \_ yield _ -> yield o p
+ cYield xo xs = Conduit $ \_ yield _ -> yield xo xp
 
  cAwait :: (i -> Conduit i o u m a) -> (u -> Conduit i o u m a) -> Conduit i o u m a
  cAwait xp xc = Conduit $ \_ _ await -> await xp xc
@@ -181,7 +181,7 @@ module Stream where
   fmap f x =
    Conduit $ \done yield await ->
     unConduit x
-     (\xv -> done (f x))
+     (\xv -> done (f xv))
      (\xo xs -> yield xo (fmap f xs))
      (\xp xc -> await (\i -> fmap f (xp i)) (\u -> fmap f (xc u)))
 
@@ -220,4 +220,4 @@ module Stream where
     (\xp xc -> await (\i -> cCompose' (xp i) yp yc) (\u -> cCompose' (xc u) yp yc))
  
  cRun :: Conduit () () () IO () -> IO ()
- cRun x = unConduit x (\xv -> return xv) (\_ xs -> cRun xs) (\xp _ -> xp ())
+ cRun x = unConduit x (\xv -> return xv) (\_ xs -> cRun xs) (\xp _ -> cRun (xp ()))
