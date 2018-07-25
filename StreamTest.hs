@@ -4,10 +4,16 @@ module StreamTest where
  import Stream
 
  i1 :: Iteratee () IO Int
- i1 = iYield 1 (iYield 2 iDone)
+ i1 = do
+  iYield' 1
+  iYield' 2
 
  i2 :: Iteratee Int IO ()
- i2 = iAwait (\a -> iYieldM (print a) (iAwait (\b -> iYieldM (print b) iDone)))
+ i2 = do
+  a <- iAwait'
+  iYieldM' $ print a
+  b <- iAwait'
+  iYieldM' $ print b
  
  i12 :: Iteratee () IO ()
  i12 = iCompose i1 i2
