@@ -160,7 +160,7 @@ module Stream where
  cDone xv = Conduit $ \done _ _ -> done xv
 
  cYield :: o -> Conduit i o u m a -> Conduit i o u m a
- cYield xo xs = Conduit $ \_ yield _ -> yield xo xp
+ cYield xo xs = Conduit $ \_ yield _ -> yield xo xs
 
  cAwait :: (i -> Conduit i o u m a) -> (u -> Conduit i o u m a) -> Conduit i o u m a
  cAwait xp xc = Conduit $ \_ _ await -> await xp xc
