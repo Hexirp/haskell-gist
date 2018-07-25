@@ -4,7 +4,7 @@ module StreamTest where
  import Stream
 
  i1 :: Iteratee () IO Int
- i1 = iYield 1 (iYield 2 iDone)
+ i1 = iYield 1 (iYield 2 (iYield 3 iDone))
 
  i2 :: Iteratee Int IO ()
  i2 = iAwait (\a -> iYieldM (print a) (iAwait (\b -> iYieldM (print b) iDone)))
