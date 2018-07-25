@@ -20,3 +20,18 @@ module StreamTest where
  
  i12 :: Iteratee () IO ()
  i12 = iCompose i1 i2
+
+ c1 :: Conduit () Int () IO ()
+ c1 = do
+  cYield' 1
+  cYield' 2
+
+ c2 :: Conduit Int () () IO ()
+ c2 = do
+  a <- cAwait'
+  cYieldM' $ print a
+  b <- cAwait'
+  cYieldM' $ print b
+
+ c12 :: Conduit () () () IO ()
+ c12 = cCompose c1 c2
