@@ -28,10 +28,8 @@ module StreamTest where
 
  c2 :: Conduit Int () () IO ()
  c2 = do
-  a <- cAwait'
-  cYieldM' $ print a
-  b <- cAwait'
-  cYieldM' $ print b
+  cAwait' (\a -> cYieldM' $ print a)
+  cAwait' (\b -> cYieldM' $ print b)
 
  c12 :: Conduit () () () IO ()
  c12 = cCompose c1 c2
