@@ -83,6 +83,15 @@ module Stream where
  iYieldM :: Monad m => m a -> Iteratee s m a -> Iteratee s m a
  iYieldM mxv xs = Iteratee $ \_ yield _ -> join $ yield <$> mxv <*> pure xs
 
+ iYield' :: a -> Iteratee s m a
+ iYield' x = iYield x iDone
+
+ iAwait' :: Iteratee s m s
+ iAwait' = iAwait (\s -> iYield s iDone)
+
+ iYieldM' :: Monad m => m a -> Iteratee s m a
+ iYieldM' mx = iYieldM mx iDone
+
  instance Semigroup (Iteratee s m a) where
   x <> y =
    Iteratee $ \done yield await ->
