@@ -12,7 +12,7 @@ module Main where
  ry = (0, 999)
 
  rP :: IO (Int, Int)
- rP = (,) <$> randomRIO r <*> randomRIO r
+ rP = (,) <$> randomRIO rx <*> randomRIO ry
 
  rPs :: [IO (Int, Int)]
  rPs = replicate 10 rP
