@@ -25,7 +25,7 @@ module Compe where
 
   Do :: IO a -> Comparg a
 
- run :: [String] -> Comparg a -> IO a
+ run :: [String] -> Skeleton Comparg a -> IO a
  run s = debone >>> \case
   Return a -> return a
   Get :>>= f -> pop s $ \x xs -> parse x $ \v -> run xs $ f v
@@ -46,5 +46,5 @@ module Compe where
  iter s 0 f = f [] s
  iter s n f = pop s $ \x xs -> parse x $ \v -> iter xs (n - 1) $ \vs s' -> f (v : vs) s'
 
- run' :: String -> Comparg a -> IO a
+ run' :: String -> Skeleton Comparg a -> IO a
  run' s = run (words s)
