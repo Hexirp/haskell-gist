@@ -29,9 +29,9 @@ module Compe where
  run s = debone >>> \case
   Return a -> return a
   Get :>>= f -> pop s $ \x xs -> parse x $ \v -> run xs $ f v
-  Vec i :>>= f -> iter s i $ \vs s' -> run s' (f vs)
+  Vec i :>>= f -> iter s (toInteger i) $ \vs s' -> run s' (f vs)
   Str :>>= f -> pop s $ \x xs -> run xs (f x)
-  Do e :>>= f -> e >>= \x -> run (f x)
+  Do e :>>= f -> e >>= \x -> run s (f x)
 
  pop :: [String] -> (String -> [String] -> IO a) -> IO a
  pop [] _ = throwIO $ userError "Argument is missing!"
