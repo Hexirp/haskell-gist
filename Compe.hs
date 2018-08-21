@@ -1,5 +1,9 @@
 module Compe where
  import Prelude
 
- main :: IO ()
- main = return ()
+ import Data.Kind (Type)
+
+ data Comparg :: Type -> Type where
+  Get :: Read a => Comparg a
+  Vec :: (Read a, Integral i) => i -> Comparg [a]
+  Str :: Comparg String
