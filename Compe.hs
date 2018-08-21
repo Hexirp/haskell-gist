@@ -1,3 +1,6 @@
+#!/usr/bin/env stack
+-- stack --resolver lts-12.7 runghci --package monad-skeleton
+
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE DataKinds #-}
