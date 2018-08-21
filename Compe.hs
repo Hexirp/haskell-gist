@@ -1,3 +1,7 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE DataKinds #-}
+
 module Compe where
  import Prelude
 
@@ -27,7 +31,7 @@ module Compe where
   Do e :>>= f -> e >>= \x -> run (f x)
 
  pop :: [String] -> (String -> [String] -> IO a) -> IO a
- pop []       _ = throwIO $ userError "Argument is missing!"
+ pop [] _ = throwIO $ userError "Argument is missing!"
  pop (x : xs) f = f x xs
 
  parse :: Read a => String -> (a -> IO b) -> IO b
