@@ -41,7 +41,7 @@ module Compe where
 
  iter :: Read a => [String] -> Integer -> ([a] -> [String] -> IO b) -> IO b
  iter s 0 f = f [] s
- iter s n f = pop s $ \x xs -> parse x $ \v -> iter xs (n - 1) $ \vs s' -> f (v : vs) s')
+ iter s n f = pop s $ \x xs -> parse x $ \v -> iter xs (n - 1) $ \vs s' -> f (v : vs) s'
 
  run' :: String -> Comparg a -> IO a
  run' s = run (words s)
