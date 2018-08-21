@@ -3,7 +3,7 @@
 
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
 
 module Compe where
  import Prelude
