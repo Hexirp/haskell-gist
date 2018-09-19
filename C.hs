@@ -28,10 +28,7 @@ module C where
 
  -- champernowne + piece
  cham_piece :: Integer -> [Bool]
- cham_piece = map (True :) . pow
-
- pow :: Integer -> [Bool]
- pow = concat . pows
+ cham_piece = concat . map (concat . map (True :)) . pows
 
  pows :: Integer -> [[Bool]]
  pows 0 = []
