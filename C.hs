@@ -31,8 +31,5 @@ module C where
  cham_piece = concat . map (concat . map (True :)) . pows
 
  pows :: Integer -> [[Bool]]
- pows 0 = []
- pows n = join $ plus_one_bit $ pows (n - 1)
-
- plus_one_bit :: [[Bool]] -> [[[Bool]]]
- plus_one_bit x = (:) <$> [False, True] <*> x
+ pows 0 = [[]]
+ pows n = (:) <$> [False, True] <*> pows (n - 1)
