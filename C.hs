@@ -28,11 +28,14 @@ module C where
 
  -- champernowne + piece
  cham_piece :: Integer -> [Bool]
- cham_piece = map (1 :) . pow
+ cham_piece = map (True :) . pow
 
  pow :: Integer -> [Bool]
  pow = concat . pows
 
  pows :: Integer -> [[Bool]]
  pows 0 = []
- pows n = join $ (:) <$> [0, 1] <*> pows (n - 1)
+ pows n = join $ plus_one_bit $ pows (n - 1)
+
+ plus_one_bit :: [[Bool]] -> [[[Bool]]]
+ plus_one_bit x = (:) <$> [False, True] <*> x
