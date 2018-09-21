@@ -10,14 +10,18 @@
 -- デメリット:
 --
 -- * 値を取り出し続けると計算量が増える（おそらく log n に比例して）
+-- * 実用的に見ると結構規則性がある
 module C where
  import Prelude
 
- import Control.Monad (join)
-
  -- [1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, ...]
+ --
  -- [1] ++ [1, 0, 1, 1] ++ [1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1] ++ ...
- -- concatMap (1 :) [[]] ++ concatMap (1 :) [[0], [1]] ++ concatMap (1 :) [[0, 0], [0, 1], [1, 0], [1, 1]] ++ ...
+ --
+ -- concatMap (1 :) [[]] ++
+ -- concatMap (1 :) [[0], [1]] ++
+ -- concatMap (1 :) [[0, 0], [0, 1], [1, 0], [1, 1]] ++
+ -- ...
 
  champernowne :: [Bool]
  champernowne = concat cham_sep
