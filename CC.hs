@@ -9,8 +9,11 @@ module CC where
  main = do
   x <- defaultMain [
    bgroup "cham" [
-    bench "10000" $ nf champernowne 10000,
-    bench "100000" $ nf champernowne 100000,
-    bench "1000000" $ nf champernowne 1000000]
+    bench "10000" $ nf cham 10000,
+    bench "100000" $ nf cham 100000,
+    bench "1000000" $ nf cham 1000000]
    ]
   return x
+
+ cham :: Integer -> [Bool]
+ cham x = take x champernowne
