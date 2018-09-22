@@ -15,5 +15,5 @@ module CC where
    ]
   return x
 
- cham :: Integer -> [Bool]
+ cham :: Int -> [Bool]
  cham x = take x champernowne
