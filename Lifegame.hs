@@ -53,3 +53,18 @@ module Lifegame where
  bti :: Bool -> Int
  bti False = 0
  bti True = 1
+
+ view :: Array -> String
+ view a = let
+   a' = fmap (<$> [ 0 .. 79 ]) $ (<$> [ 0 .. 79 ]) $ a
+  in
+   bits a
+
+ bits :: [[Bool]] -> String
+ bits []       = ""
+ bits (x : xs) = bit x $ ('\n' :) $ bits xs
+
+ bit :: [Bool] -> String -> String
+ bit []           = id
+ bit (False : xs) = (' ' :) . bit xs
+ bit (True  : xs) = ('#' :) . bit xs
