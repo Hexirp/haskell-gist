@@ -31,7 +31,9 @@ module Lifegame where
     || (x == 2 && y == 2)
 
  update :: Array -> Array
- update a = \x y -> let
+ update a = \x_ y_ -> let
+  x = x_ `mod` 80
+  y = y_ `mod` 80
   b = a x y
   n = 0
    + bti (a (x - 1) (y - 1))
