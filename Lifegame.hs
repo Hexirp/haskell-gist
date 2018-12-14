@@ -61,7 +61,7 @@ module Lifegame where
  view a = let
    a' = fmap (<$> [ 0 .. 79 ]) $ (<$> [ 0 .. 79 ]) $ a
   in
-   bits 'a
+   bits a'
 
  bits :: [[Bool]] -> String
  bits []       = ""
