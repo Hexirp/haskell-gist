@@ -69,5 +69,5 @@ module Lifegame where
 
  bit :: [Bool] -> String -> String
  bit []           = id
- bit (False : xs) = (' ' :) . bit xs
+ bit (False : xs) = ('-' :) . bit xs
  bit (True  : xs) = ('#' :) . bit xs
