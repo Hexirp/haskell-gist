@@ -6,7 +6,7 @@ module Lifegame where
  main :: IO ()
  main = loop new
 
- loop :: Array -> IO Array
+ loop :: Array -> IO ()
  loop a = do
   putStrLn $ view a
   threadDelay 100000
@@ -61,7 +61,7 @@ module Lifegame where
  view a = let
    a' = fmap (<$> [ 0 .. 79 ]) $ (<$> [ 0 .. 79 ]) $ a
   in
-   bits a
+   bits 'a
 
  bits :: [[Bool]] -> String
  bits []       = ""
