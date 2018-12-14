@@ -7,7 +7,10 @@ module Lifegame where
  main = loop new
 
  loop :: Array -> IO Array
- loop a = (\_ y -> y) <$> threadDelay 100000 <*> loop (update a)
+ loop a = do
+  putStrLn $ view a
+  threadDelay 100000
+  loop (update a)
 
 
  type Array = Int -> Int -> Bool
