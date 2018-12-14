@@ -8,8 +8,8 @@ module Lifegame where
 
  loop :: Array -> IO ()
  loop a = do
-  putStr $ view a
   threadDelay 10000000
+  putStrLn $ view a
   loop (update a)
 
 
