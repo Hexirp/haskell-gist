@@ -1,9 +1,14 @@
 module Lifegame where
 
  import Prelude
+ import Control.Concurrent (threadDelay)
 
  main :: IO ()
- main = return ()
+ main = loop new
+
+ loop :: Array -> IO Array
+ loop a = (\_ y -> y) <$> threadDelay 100000 <*> loop (update a)
+
 
  type Array = Int -> Int -> Bool
 
