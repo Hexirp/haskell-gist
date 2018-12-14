@@ -40,7 +40,7 @@ module Lifegame where
    + bti (a (x - 1) (y + 0))
    + bti (a (x - 1) (y + 1))
    + bti (a (x + 0) (y - 1))
-   + bti (a (x + 0) (y + 0))
+   -- + bti (a (x + 0) (y + 0))
    + bti (a (x + 0) (y + 1))
    + bti (a (x + 1) (y - 1))
    + bti (a (x + 1) (y + 0))
@@ -57,7 +57,7 @@ module Lifegame where
 
  bti :: Bool -> Int
  bti False = 0
- bti True = 1
+ bti True  = 1
 
  view :: Array -> String
  view a = let
