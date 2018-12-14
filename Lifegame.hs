@@ -20,8 +20,8 @@ module Lifegame where
  -- ###
  new :: Array
  new = \x_ y_ -> let
-   x = x_ `mod` 80
-   y = y_ `mod` 80
+   x = x_ `mod` 20
+   y = y_ `mod` 20
   in
    False
     || (x == 0 && y == 1)
@@ -32,8 +32,8 @@ module Lifegame where
 
  update :: Array -> Array
  update a = \x_ y_ -> let
-  x = x_ `mod` 80
-  y = y_ `mod` 80
+  x = x_ `mod` 20
+  y = y_ `mod` 20
   b = a x y
   n = 0
    + bti (a (x - 1) (y - 1))
@@ -61,7 +61,7 @@ module Lifegame where
 
  view :: Array -> String
  view a = let
-   a' = fmap (<$> [ 0 .. 79 ]) $ (<$> [ 0 .. 79 ]) $ a
+   a' = fmap (<$> [ 0 .. 19 ]) $ (<$> [ 0 .. 19 ]) $ a
   in
    bits a'
 
