@@ -36,34 +36,43 @@ module Trampoline where
   go x = x `deepseq` case f x of
    Left a -> go a
    Right b -> b
- 
- instance Functor (Trampoline0 a) where
-  fmap f (Trampoline0 g) = Trampoline0 (fmap (fmap f) g)
- 
- instance Applicative (Trampoline0 a) where
-  pure x = Trampoline0 (pure (pure x))
-  Trampoline0 f <*> Trampoline0 x = Trampoline0 ((<*>) <$> f <*> g)
- 
- instance Monad (Trampoline0 a) where
-  Trampoline0 x >>= Trampoline0 f = Trampoline0 $ \a -> 
 
- data Trampoline0 :: * -> * -> * where
-  Trampoline0 :: a -> (a -> Either a b) -> Trampoline0 a b
+ fmap0 :: NFData a => (b0 -> b1) -> Trampoline0 a b0 -> Trampoline0 a b1
+ fmap0 m f = Trampoline0 $ \a -> Right $ m $ run4 f a
 
- run4 :: NFData a => Trampoline0 a b -> b
- run4 (Trampoline0 z f) = go z where
+ pure0 :: b -> Trampoline0 a b
+ pure0 x = Trampoline0 (\_ -> Right x)
+
+ fapp0
+  :: NFData a
+  => Trampoline a (b0 -> b1)
+  -> Trampoline0 a b0
+  -> Trampoline0 a b1
+ fapp0 m f
+  = Trampoline0 $ \a -> run4 m a $ run4 f a
+
+ bind0
+  :: NFData a
+  => Trampoline0 a b0
+  -> (b0 -> Trampoline0 a b1)
+  -> Trampoline0 a b1
+ bind0 f m
+  = Trampoline0 $ \a -> m $ run4 f a
+
+ data Trampoline1 :: * -> * -> * where
+  Trampoline1 :: a -> (a -> Either a b) -> Trampoline1 a b
+
+ run5 :: NFData a => Trampoline1 a b -> b
+ run5 (Trampoline1 z f) = go z where
   go x = x `deepseq` case f x of
    Left a -> go a
    Right b -> b
 
- instance Functor (Trampoline0 a) where
-  fmap f (Trampoline0 z g) = Trampoline0 z (fmap (fmap f) g)
+ data Trampoline2 :: * -> * where
+  Trampoline2 :: NFData a => a -> (a -> Eithr a b) -> Trampoline2 b
 
- -- Applicative (Trampoline0 a) is impossible. I can't make 'pure' because
- -- @a@ may be @Void@.
-
- data Trampoline1 :: * -> * where
-  Trampoline1 :: NFData a => a -> (a -> Eithr a b) -> Trampoline1 b
-
- run5 :: Trampoline1 b -> b
- run
+ run6 :: Trampoline2 b -> b
+ run6 (Trampoline2 z f) = go z where
+  go x = x `deepseq` case f x of
+   Left a -> go a
+   Right b -> b
