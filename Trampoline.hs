@@ -48,16 +48,22 @@ module Trampoline where
   => Trampoline a (b0 -> b1)
   -> Trampoline0 a b0
   -> Trampoline0 a b1
- fapp0 m f
-  = Trampoline0 $ \a -> run4 m a $ run4 f a
+ fapp0 m f = Trampoline0 $ \a -> run4 m a $ run4 f a
 
  bind0
   :: NFData a
   => Trampoline0 a b0
   -> (b0 -> Trampoline0 a b1)
   -> Trampoline0 a b1
- bind0 f m
-  = Trampoline0 $ \a -> m $ run4 f a
+ bind0 f m = Trampoline0 $ \a -> m $ run4 f a
+
+ prod0
+  :: (NFData a0, NFData a1)
+  => Trampoline0 a0 b0
+  -> Trampoline0 a1 b1
+  -> Trampoline0 (a0, a1) (b0, b1)
+ prod0 f g
+  = Trampoline0 $ \(a0, a1) -> (run4 f a0, run4 g a1)
 
  data Trampoline1 :: * -> * -> * where
   Trampoline1 :: a -> (a -> Either a b) -> Trampoline1 a b
