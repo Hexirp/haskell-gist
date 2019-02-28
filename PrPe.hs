@@ -32,7 +32,7 @@ module PrPe where
  lines3 :: String -> [String]
  lines3 []          = []
  lines3 ('\n' : xs) = [] : lines3 xs
- lines3 (x    : xs) = lines3_f x (lines2 xs)
+ lines3 (x    : xs) = lines3_f x (lines3 xs)
 
  lines3_f :: Char -> [String] -> [String]
  lines3_f x []       = (x : []) : []
