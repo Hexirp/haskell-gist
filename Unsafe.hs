@@ -4,6 +4,9 @@ module Unsafe where
 
  import Unsafe.Coerce
 
+ import GHC.Exts
+ import GHC.Show
+
  -- >>> main
  -- 2305843009213693952
  --
@@ -13,4 +16,7 @@ module Unsafe where
  --
  -- 内部表現が露出している感が強い。
  main :: IO ()
- main = print $ (unsafeCoerce True :: Int)
+ main = print $ (unsafeCoerce True :: Int#)
+
+ showIntHash :: Int# -> String
+ showIntHash n# = itos n# []
