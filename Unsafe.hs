@@ -18,7 +18,28 @@ module Unsafe where
  --
  -- 内部表現が露出している感が強い。
  main :: IO ()
- main = print $ (unsafeCoerce True :: Int#)
+ main = putStrLn $ show (unsafeCoerce True :: Int#)
 
  showIntHash :: Int# -> String
  showIntHash n# = itos n# []
+
+ itos :: Int# -> String -> String
+ itos n# cs
+     | isTrue# (n# <# 0#) =
+         let !(I# minInt#) = minInt in
+         if isTrue# (n# ==# minInt#)
+                 -- negateInt# minInt overflows, so we can't do that:
+            then '-' : (case n# `quotRemInt#` 10# of
+                        (# q, r #) ->
+                            itos' (negateInt# q) (itos' (negateInt# r) cs))
+            else '-' : itos' (negateInt# n#) cs
+     | otherwise = itos' n# cs
+     where
+     itos' :: Int# -> String -> String
+     itos' x# cs'
+         | isTrue# (x# <# 10#) = C# (chr# (ord# '0'# +# x#)) : cs'
+         | otherwise = case x# `quotRemInt#` 10# of
+                       (# q, r #) ->
+                           case chr# (ord# '0'# +# r) of
+                           c# ->
+                               itos' q (C# c# : cs')
