@@ -1,4 +1,4 @@
-{-# LANGUAGE MagicHash #-}
+{-# LANGUAGE MagicHash, BangPatterns, UnboxedTuples #-}
 
 module Unsafe where
 
@@ -18,10 +18,10 @@ module Unsafe where
  --
  -- 内部表現が露出している感が強い。
  main :: IO ()
- main = putStrLn $ show (unsafeCoerce True :: Int#)
+ main = putStrLn $ showUnboxedInt (unsafeCoerce True :: Int#)
 
- showIntHash :: Int# -> String
- showIntHash n# = itos n# []
+ showUnboxedInt :: Int# -> String
+ showUnboxedInt n# = itos n# []
 
  itos :: Int# -> String -> String
  itos n# cs
