@@ -44,3 +44,5 @@ module RST where
 
  title3 :: a -> ([String] -> a) -> String -> String -> String -> a
  title3 yes no l t r = undefined
+
+ title :: [String] -> 
