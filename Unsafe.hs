@@ -1,3 +1,5 @@
+{-# LANGUAGE MagicHash #-}
+
 module Unsafe where
 
  import Prelude
