@@ -1,16 +1,8 @@
-module Unsafe where
+import Unsafe.Coerce
 
- import Prelude
+{-# NOINLINE bool_var1 #-}
+bool_var1 :: Bool
+bool_var1 = True
 
- import Unsafe.Coerce
-
- -- >>> main
- -- 2305843009213693952
- --
- -- これは二進法で
- --
- -- 10000000000000000000000000000000000000000000000000000000000000
- --
- -- 内部表現が露出している感が強い。
- main :: IO ()
- main = putStrLn $ show (unsafeCoerce True :: Int)
+main :: IO ()
+main = print $ (unsafeCoerce bool_var1 :: Int)

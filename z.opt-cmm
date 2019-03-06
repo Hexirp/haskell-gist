@@ -1,0 +1,244 @@
+[1 of 1] Compiling Main             ( Unsafe.hs, Unsafe.o )
+
+==================== Optimised Cmm ====================
+section ""data" . Main.bool_var1_closure" {
+    Main.bool_var1_closure:
+        const GHC.Types.True_con_info;
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""cstring" . Main.$trModule4_bytes" {
+    Main.$trModule4_bytes:
+        I8[] [109,97,105,110]
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.$trModule3_closure" {
+    Main.$trModule3_closure:
+        const GHC.Types.TrNameS_con_info;
+        const Main.$trModule4_bytes;
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""cstring" . Main.$trModule2_bytes" {
+    Main.$trModule2_bytes:
+        I8[] [77,97,105,110]
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.$trModule1_closure" {
+    Main.$trModule1_closure:
+        const GHC.Types.TrNameS_con_info;
+        const Main.$trModule2_bytes;
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.$trModule_closure" {
+    Main.$trModule_closure:
+        const GHC.Types.Module_con_info;
+        const Main.$trModule3_closure+1;
+        const Main.$trModule1_closure+1;
+        const 3;
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.main2_closure" {
+    Main.main2_closure:
+        const Main.main2_info;
+        const 0;
+        const 0;
+        const 0;
+}
+
+
+
+==================== Optimised Cmm ====================
+Main.main2_entry() //  [R1]
+        { [(c2B6,
+            Main.main2_info:
+                const 0;
+                const 21;),
+           (c2Bb,
+            block_c2Bb_info:
+                const 0;
+                const 30;)]
+        }
+    {offset
+      c2B6: // global
+          if ((Sp + -24) < SpLim) (likely: False) goto c2Be; else goto c2Bf;
+      c2Be: // global
+          // nop
+          call (I64[BaseReg - 16])(R1) args: 8, res: 0, upd: 8;
+      c2Bf: // global
+          (_c2B2::I64) = call "ccall" arg hints:  [PtrHint,
+                                                   PtrHint]  result hints:  [PtrHint] newCAF(BaseReg, R1);
+          if (_c2B2::I64 == 0) goto c2B4; else goto c2B3;
+      c2B4: // global
+          call (I64[R1])() args: 8, res: 0, upd: 8;
+      c2B3: // global
+          I64[Sp - 16] = stg_bh_upd_frame_info;
+          I64[Sp - 8] = _c2B2::I64;
+          _s2AP::I64 = I64[Main.bool_var1_closure+9];
+          I64[Sp - 24] = block_c2Bb_info;
+          R4 = GHC.Types.[]_closure+1;
+          R3 = _s2AP::I64;
+          R2 = 0;
+          Sp = Sp - 24;
+          call GHC.Show.$wshowSignedInt_info(R4,
+                                             R3,
+                                             R2) returns to c2Bb, args: 8, res: 8, upd: 24;
+      c2Bb: // global
+          Hp = Hp + 24;
+          if (Hp > I64[BaseReg + 856]) (likely: False) goto c2Bj; else goto c2Bi;
+      c2Bj: // global
+          I64[BaseReg + 904] = 24;
+          // nop
+          // nop
+          call stg_gc_pp(R2, R1) returns to c2Bb, args: 8, res: 8, upd: 24;
+      c2Bi: // global
+          I64[Hp - 16] = :_con_info;
+          P64[Hp - 8] = R1;
+          P64[Hp] = R2;
+          R1 = Hp - 14;
+          Sp = Sp + 8;
+          call (P64[Sp])(R1) args: 24, res: 0, upd: 24;
+    }
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.main1_closure" {
+    Main.main1_closure:
+        const Main.main1_info;
+        const 0;
+}
+
+
+
+==================== Optimised Cmm ====================
+Main.main1_entry() //  []
+        { [(c2Bs,
+            Main.main1_info:
+                const S2Bv_srt-Main.main1_info;
+                const 4294967299;
+                const 0;
+                const 30064771086;)]
+        }
+    {offset
+      c2Bs: // global
+          R4 = GHC.Types.True_closure+2;
+          R3 = Main.main2_closure;
+          R2 = GHC.IO.Handle.FD.stdout_closure;
+          call GHC.IO.Handle.Text.hPutStr2_info(R4,
+                                                R3,
+                                                R2) args: 8, res: 0, upd: 8;
+    }
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.main_closure" {
+    Main.main_closure:
+        const Main.main_info;
+        const 0;
+}
+
+
+
+==================== Optimised Cmm ====================
+Main.main_entry() //  []
+        { [(c2BD,
+            Main.main_info:
+                const S2Bv_srt-Main.main_info+24;
+                const 4294967299;
+                const 0;
+                const 4294967310;)]
+        }
+    {offset
+      c2BD: // global
+          call Main.main1_info() args: 8, res: 0, upd: 8;
+    }
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . Main.main3_closure" {
+    Main.main3_closure:
+        const Main.main3_info;
+        const 0;
+}
+
+
+
+==================== Optimised Cmm ====================
+Main.main3_entry() //  []
+        { [(c2BN,
+            Main.main3_info:
+                const S2Bv_srt-Main.main3_info+24;
+                const 4294967299;
+                const 0;
+                const 12884901902;)]
+        }
+    {offset
+      c2BN: // global
+          R2 = Main.main1_closure+1;
+          call GHC.TopHandler.runMainIO1_info(R2) args: 8, res: 0, upd: 8;
+    }
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""data" . :Main.main_closure" {
+    :Main.main_closure:
+        const :Main.main_info;
+        const 0;
+}
+
+
+
+==================== Optimised Cmm ====================
+:Main.main_entry() //  []
+        { [(c2BX,
+            :Main.main_info:
+                const S2Bv_srt-:Main.main_info+40;
+                const 4294967299;
+                const 0;
+                const 4294967310;)]
+        }
+    {offset
+      c2BX: // global
+          call Main.main3_info() args: 8, res: 0, upd: 8;
+    }
+}
+
+
+
+==================== Optimised Cmm ====================
+section ""relreadonly" . S2Bv_srt" {
+    S2Bv_srt:
+        const GHC.IO.Handle.Text.hPutStr2_closure;
+        const GHC.IO.Handle.FD.stdout_closure;
+        const Main.main2_closure;
+        const Main.main1_closure;
+        const GHC.TopHandler.runMainIO1_closure;
+        const Main.main3_closure;
+}
+
+
+Linking Unsafe.exe ...

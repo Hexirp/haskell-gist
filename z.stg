@@ -1,0 +1,123 @@
+[1 of 1] Compiling Main             ( Unsafe.hs, Unsafe.o )
+
+==================== Pre unarise: ====================
+Main.bool_var1 [InlPrag=NOINLINE] :: GHC.Types.Bool
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.True! [];
+
+Main.$trModule4 :: GHC.Prim.Addr#
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    "main"#;
+
+Main.$trModule3 :: GHC.Types.TrName
+[GblId, Caf=NoCafRefs, Str=m1, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.TrNameS! [Main.$trModule4];
+
+Main.$trModule2 :: GHC.Prim.Addr#
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    "Main"#;
+
+Main.$trModule1 :: GHC.Types.TrName
+[GblId, Caf=NoCafRefs, Str=m1, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.TrNameS! [Main.$trModule2];
+
+Main.$trModule :: GHC.Types.Module
+[GblId, Caf=NoCafRefs, Str=m, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.Module! [Main.$trModule3 Main.$trModule1];
+
+Main.main2 :: GHC.Base.String
+[GblId] =
+    [] \u []
+        case Main.bool_var1 of {
+          GHC.Types.I# ww3_s2AP [Occ=Once] ->
+              case GHC.Show.$wshowSignedInt 0# ww3_s2AP GHC.Types.[] of {
+                (#,#) ww5_s2AR [Occ=Once] ww6_s2AS [Occ=Once] ->
+                    : [ww5_s2AR ww6_s2AS];
+              };
+        };
+
+Main.main1
+  :: GHC.Prim.State# GHC.Prim.RealWorld
+     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [eta_B1]
+        GHC.IO.Handle.Text.hPutStr2
+            GHC.IO.Handle.FD.stdout Main.main2 GHC.Types.True eta_B1;
+
+Main.main :: GHC.Types.IO ()
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [eta_B1] Main.main1 eta_B1;
+
+Main.main3
+  :: GHC.Prim.State# GHC.Prim.RealWorld
+     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [eta_B1] GHC.TopHandler.runMainIO1 Main.main1 eta_B1;
+
+:Main.main :: GHC.Types.IO ()
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [eta_B1] Main.main3 eta_B1;
+
+
+
+==================== STG syntax: ====================
+Main.bool_var1 [InlPrag=NOINLINE] :: GHC.Types.Bool
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.True! [];
+
+Main.$trModule4 :: GHC.Prim.Addr#
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    "main"#;
+
+Main.$trModule3 :: GHC.Types.TrName
+[GblId, Caf=NoCafRefs, Str=m1, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.TrNameS! [Main.$trModule4];
+
+Main.$trModule2 :: GHC.Prim.Addr#
+[GblId, Caf=NoCafRefs, Unf=OtherCon []] =
+    "Main"#;
+
+Main.$trModule1 :: GHC.Types.TrName
+[GblId, Caf=NoCafRefs, Str=m1, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.TrNameS! [Main.$trModule2];
+
+Main.$trModule :: GHC.Types.Module
+[GblId, Caf=NoCafRefs, Str=m, Unf=OtherCon []] =
+    CCS_DONT_CARE GHC.Types.Module! [Main.$trModule3 Main.$trModule1];
+
+Main.main2 :: GHC.Base.String
+[GblId] =
+    [] \u []
+        case Main.bool_var1 of {
+          GHC.Types.I# ww3_s2AP [Occ=Once] ->
+              case GHC.Show.$wshowSignedInt 0# ww3_s2AP GHC.Types.[] of {
+                (#,#) ww5_s2AR [Occ=Once] ww6_s2AS [Occ=Once] ->
+                    : [ww5_s2AR ww6_s2AS];
+              };
+        };
+
+Main.main1
+  :: GHC.Prim.State# GHC.Prim.RealWorld
+     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [void_0E]
+        GHC.IO.Handle.Text.hPutStr2
+            GHC.IO.Handle.FD.stdout Main.main2 GHC.Types.True GHC.Prim.void#;
+
+Main.main :: GHC.Types.IO ()
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [void_0E] Main.main1 GHC.Prim.void#;
+
+Main.main3
+  :: GHC.Prim.State# GHC.Prim.RealWorld
+     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [void_0E]
+        GHC.TopHandler.runMainIO1 Main.main1 GHC.Prim.void#;
+
+:Main.main :: GHC.Types.IO ()
+[GblId, Arity=1, Unf=OtherCon []] =
+    [] \r [void_0E] Main.main3 GHC.Prim.void#;
+
+
+Linking Unsafe.exe ...
