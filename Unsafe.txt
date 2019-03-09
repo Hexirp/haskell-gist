@@ -1,0 +1,49 @@
+  $ ./Unsafe.exe
+  19394
+
+19394 = 0x0000000000004bc2 。
+
+  $ stack ghc -- -O -fforce-recomp -ddump-stg     Unsafe.hs > z.stg
+
+結果は commit してある。
+
+  $ stack ghc -- -O -fforce-recomp -ddump-opt-cmm Unsafe.hs > z.opt-cmm
+
+上と同じ。
+
+  $ stack ghc -- -O -fforce-recomp -ddump-asm     Unsafe.hs > z.asm
+
+上と同じ。
+
+  $ stack exec -- objdump -D Unsafe.exe > z.diasm
+
+結果は以下のようになった（一部分を抜粋）。
+
+  00000000004fb010 <Main_boolzuvar1_closure>:
+    4fb010: b8 c2 4b 00 00        mov    $0x4bc2,%eax
+    4fb015: 00 00                 add    %al,(%rax)
+    ...
+
+  00000000004fb018 <Main_zdtrModule3_closure>:
+    4fb018: f8                    clc
+    4fb019: c2 4b 00              retq   $0x4b
+    4fb01c: 00 00                 add    %al,(%rax)
+    4fb01e: 00 00                 add    %al,(%rax)
+    4fb020: 00 90 50 00 00 00     add    %dl,0x50(%rax)
+    ...
+
+4fb019 が指されていて、これにより 00 00 00 00 00 00 c2 4b が表示される。
+
+
+* +9 は bit がずれるのではなく byte がずれる。
+* 4fb019 へ飛んで行って、その実行結果が返されるのではない。
+* これは x64 というアセンブリ言語。
+* objdump は stack に入っている環境を使えばよい。
+* True を使った元々のコードと違って bool_var1 が使われているので bool_var1 が
+  指される。
+* よって、元々のコードと結果は別になる。
+* 8 byte を取ってきているけど、それは objdump で表示したものと反転している。
+* +9 は [1] の所で add なんなりの命令で足されているのかと思ったけど、コンパイル
+  時に解決されていた。
+
+[1]: https://gist.github.com/takenobu-hs/751aed055481d3594cf439a40790119b/a5c56fbb189808ab54f1b1873c74ce758d6da266#file-execution-txt-L48
