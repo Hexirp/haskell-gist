@@ -64,7 +64,7 @@ compose s t = case s of
  Await se sf -> case t of
   Done tr -> undefined
   Yield to tk -> compose (se to) tk
-  Await te tf -> Await (\(a :: a) -> compose (te a) s) (\(c :: c) -> compose (tf c) s)
+  Await (te :: a -> Vessel a b c d) (tf :: c -> Vessel a b c d) -> Await (\(a :: a) -> compose (te a) s) (\(c :: c) -> compose (tf c) s)
 
 
 main :: IO ()
