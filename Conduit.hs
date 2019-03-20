@@ -17,8 +17,7 @@ map' f = go where
 -- ている。ちなみに、これはパターンマッチングによる評価の強制により駆動するので
 -- pull 式ということになるのだと思う。
 
-data Fix f where
- Fix :: forall x. (x -> Fix f) -> f x -> Fix f
+data Fix f = Fix (f (Fix f))
 
 data StrF a b i = Nil b | Cons a i
 
@@ -35,14 +34,12 @@ data Vessel' i o u r
 -- これが conduit の組み立て方である。これは Free や Coyoneda を型レベルで展開
 -- しているので分かりにくい。Str を援用して分かりやすくする。
 
-newtype Freer f a = Freer {
-  runFreer :: forall m. Monad m => (forall t. f t -> m t) -> m a }
-
-data VesselF i o u r where
- Await :: VesselF i o u (StrF a b ())
- Yield :: o -> VesselF i o u ()
-
-type Vessel i o u = Freer (VesselF i o u)
+data Vessel i o u r
+ = Done r
+ | Yield o (Vessek i o u r)
+ | Await (StrF i u () -> Vessel i o u r)
 
 runVessel :: Vessel i o u r -> Str i u -> Str o r
-runVessel (Freer k) 
+runVessel (Done r)    _             = Fix (Nil r)
+runVessel (Yield o k) s             = Fix (Cons o (Fix (runVessel k s)))
+runVessel (Await k)   (Fix (Nil u)) = runVessel
