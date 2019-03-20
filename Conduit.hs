@@ -47,12 +47,22 @@ runVessel (Await e f) s = case s of
 
 -}
 
+-- runVessel a b は a の実行結果に従い b から要素を取り出していく。
 runVessel :: Vessel i o u r -> Str i u -> Str o (Either (Vessel i o u r) (Str i u, r))
 runVessel (Done r)    s = Nil (Right (s, r))
 runVessel (Yield o k) s = Cons o (runVessel k s)
 runVessel (Await e f) s = case s of
  Nil u    -> Nil (Left (f u))
  Cons i s -> runVessel (e i) s
+
+-- compose a b は a の実行結果に従い b から要素を取り出していく。
+compose :: Vessel c d e f -> Vessel a b c d -> Vessel a b e f
+compose (Done r)    t = undefined
+compose (Yield o k) t = Yield o (compose k t)
+compose (Await e f) t = case t of
+ Done u -> undefined
+ Yield c t -> compose (e c) t
+ Await a b -> Await (\x -> compose (Await e f) (a x)) (\x -> compose (Await e f) (b x))
 
 
 main :: IO ()
