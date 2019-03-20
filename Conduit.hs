@@ -17,20 +17,12 @@ map' f = go where
 -- ている。ちなみに、これはパターンマッチングによる評価の強制により駆動するので
 -- pull 式ということになるのだと思う。
 
-data Fix f = Fix (f (Fix f))
+data StrF a b i = NilF b | ConsF a i
 
-type Str a b = 
+data Str a b = Nil b | Cons a (Str a b)
 
 -- このようなデータ構造を考える。ここでリストを使わないのは終端処理で値を返した
 -- い場合があるからだ。つまりリストでは return を実現できない。
-
-data Vessel' i o u r
- = Yield' o (Vessel' i o u r)
- | Await' (i -> Vessel' i o u r) (u -> Vessel' i o u r)
- | Done' r
-
--- これが conduit の組み立て方である。これは Free や Coyoneda を型レベルで展開
--- しているので分かりにくい。Str を援用して分かりやすくする。
 
 data Vessel i o u r
  = Done r
@@ -38,6 +30,12 @@ data Vessel i o u r
  | Await (i -> Vessel i o u r) (u -> Vessel i o u r)
 
 runVessel :: Vessel i o u r -> Str i u -> Str o r
-runVessel (Done r)    _             = Fix (Nil r)
-runVessel (Yield o k) s             = Fix (Cons o (Fix (runVessel k s)))
-runVessel (Await k)   (Fix (Nil u)) = runVessel
+runVessel (Done r)    _ = Nil r
+runVessel (Yield o k) s = Cons o (runVessel k s)
+runVessel (Await e f) s = case s of
+ Nil u    -> undefined (f u)
+ Cons i s -> runVessel (e i) s
+
+
+main :: IO ()
+main = return ()
