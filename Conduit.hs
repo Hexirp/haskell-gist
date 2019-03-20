@@ -38,13 +38,20 @@ runVessel (Await e f) s = case s of
  Nil u    -> undefined (f u)
  Cons i s -> runVessel (e i) s
 
--}
-
 runVessel :: Vessel i o u r -> Str i u -> Str o (Vessel i o u r)
 runVessel (Done r)    _ = undefined
 runVessel (Yield o k) s = Cons o (runVessel k s)
 runVessel (Await e f) s = case s of
  Nil u    -> Nil (f u)
+ Cons i s -> runVessel (e i) s
+
+-}
+
+runVessel :: Vessel i o u r -> Str i u -> Str o (Either (Vessel i o u r) r)
+runVessel (Done r)    _ = Nil (Right r)
+runVessel (Yield o k) s = Cons o (runVessel k s)
+runVessel (Await e f) s = case s of
+ Nil u    -> Nil (Left (f u))
  Cons i s -> runVessel (e i) s
 
 
