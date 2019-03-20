@@ -1,6 +1,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeHoles #-}
 
 -- iteratee, conduit, ... などのストリーム処理ライブラリは [String] -> [Int] と
 -- いうようなリストからリストへの関数をよりよく表すものである。このような関数は
@@ -59,12 +60,12 @@ runVessel (Await e f) s = case s of
 -- compose a b は a の実行結果に従い b から要素を取り出していく。
 compose :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c f
 compose s t = case s of
- Done sr -> undefined
+ Done sr -> _ sr
  Yield so sk -> Yield so (compose sk t)
  Await se sf -> case t of
-  Done tr -> undefined
+  Done tr -> _ (sf tr)
   Yield to tk -> compose (se to) tk
-  Await (te :: a -> Vessel a b c d) (tf :: c -> Vessel a b c d) -> Await (\(a :: a) -> compose (te a) s) (\(c :: c) -> compose (tf c) s)
+  Await te tf -> Await (\a -> compose s (te a)) (\c -> compose s (tf c))
 
 
 main :: IO ()
