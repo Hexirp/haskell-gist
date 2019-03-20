@@ -1,7 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeHoles #-}
 
 -- iteratee, conduit, ... などのストリーム処理ライブラリは [String] -> [Int] と
 -- いうようなリストからリストへの関数をよりよく表すものである。このような関数は
