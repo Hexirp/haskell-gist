@@ -9,9 +9,9 @@
 
 map' :: (a -> b) -> [a] -> [b]
 map' f = go where
- go x = case x of      --   await
-  []     -> []         --   done
-  x : xs -> f x : go x --   yield & continue
+ go x = case x of       --   await
+  []     -> []          --   done
+  x : xs -> f x : go xs --   yield & continue
 
 -- 上のコードで図示されるように conduit における基本的な動作が既に map に含まれ
 -- ている。ちなみに、これはパターンマッチングによる評価の強制により駆動するので
@@ -26,7 +26,7 @@ data Str a b = Nil b | Cons a (Str a b)
 
 data Vessel i o u r
  = Done r
- | Yield o (Vessek i o u r)
+ | Yield o (Vessel i o u r)
  | Await (i -> Vessel i o u r) (u -> Vessel i o u r)
 
 runVessel :: Vessel i o u r -> Str i u -> Str o r
