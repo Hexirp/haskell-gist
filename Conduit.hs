@@ -19,9 +19,7 @@ map' f = go where
 
 data Fix f = Fix (f (Fix f))
 
-data StrF a b i = Nil b | Cons a i
-
-type Str a b = Fix (StrF a b)
+type Str a b = 
 
 -- このようなデータ構造を考える。ここでリストを使わないのは終端処理で値を返した
 -- い場合があるからだ。つまりリストでは return を実現できない。
@@ -37,7 +35,7 @@ data Vessel' i o u r
 data Vessel i o u r
  = Done r
  | Yield o (Vessek i o u r)
- | Await (StrF i u () -> Vessel i o u r)
+ | Await (i -> Vessel i o u r) (u -> Vessel i o u r)
 
 runVessel :: Vessel i o u r -> Str i u -> Str o r
 runVessel (Done r)    _             = Fix (Nil r)
