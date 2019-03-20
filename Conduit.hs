@@ -47,8 +47,8 @@ runVessel (Await e f) s = case s of
 
 -}
 
-runVessel :: Vessel i o u r -> Str i u -> Str o (Either (Vessel i o u r) r)
-runVessel (Done r)    _ = Nil (Right r)
+runVessel :: Vessel i o u r -> Str i u -> Str o (Either (Vessel i o u r) (Str i u, r))
+runVessel (Done r)    s = Nil (Right (s, r))
 runVessel (Yield o k) s = Cons o (runVessel k s)
 runVessel (Await e f) s = case s of
  Nil u    -> Nil (Left (f u))
