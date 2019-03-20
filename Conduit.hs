@@ -29,11 +29,22 @@ data Vessel i o u r
  | Yield o (Vessel i o u r)
  | Await (i -> Vessel i o u r) (u -> Vessel i o u r)
 
+{-
+
 runVessel :: Vessel i o u r -> Str i u -> Str o r
 runVessel (Done r)    _ = Nil r
 runVessel (Yield o k) s = Cons o (runVessel k s)
 runVessel (Await e f) s = case s of
  Nil u    -> undefined (f u)
+ Cons i s -> runVessel (e i) s
+
+-}
+
+runVessel :: Vessel i o u r -> Str i u -> Str o (Vessel i o u r)
+runVessel (Done r)    _ = undefined
+runVessel (Yield o k) s = Cons o (runVessel k s)
+runVessel (Await e f) s = case s of
+ Nil u    -> Nil (f u)
  Cons i s -> runVessel (e i) s
 
 
