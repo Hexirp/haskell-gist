@@ -56,14 +56,14 @@ runVessel (Await e f) s = case s of
  Cons i s -> runVessel (e i) s
 
 -- compose a b は a の実行結果に従い b から要素を取り出していく。
-compose :: Vessel a e c f -> Vessel a b c d -> Vessel a e c f
+compose :: Vessel b e d f -> Vessel a b c d -> Vessel a e c f
 compose s t = case s of
  Done sr -> undefined
  Yield so sk -> Yield so (compose sk t)
  Await se sf -> case t of
   Done tr -> undefined
   Yield to tk -> compose (se to) tk
-  Await te tf -> Await (\x -> compose (te x) s) (\x -> compose (tf x) s)
+  Await te tf -> Await (\a -> compose (te a) s) (\c -> compose (tf c) s)
 
 
 main :: IO ()
