@@ -59,10 +59,10 @@ runVessel (Await e f) s = case s of
 -- compose a b は a の実行結果に従い b から要素を取り出していく。
 compose :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c f
 compose s t = case s of
- Done sr -> _ sr t
+ Done sr -> undefined sr t
  Yield so sk -> Yield so (compose sk t)
  Await se sf -> case t of
-  Done tr -> _ (sf tr)
+  Done tr -> undefined (sf tr)
   Yield to tk -> compose (se to) tk
   Await te tf -> Await (\a -> compose s (te a)) (\c -> compose s (tf c))
 
@@ -74,9 +74,9 @@ fuse s t = goR s t where
   Done sr -> _ sr t
   Yield so sk -> Yield so (goR sk t)
   Await se sf -> goL se sf t
- goL :: (b -> Vessel a b c d) -> (d -> Vessel a b c d) -> Vessel a b c d -> Vessel a e c f
+ goL :: (b -> Vessel b e d f) -> (d -> Vessel b e d f) -> Vessel a b c d -> Vessel a e c f
  goL se sf t = case t of
-  Done tr -> _ se sf tr
+  Done tr -> _ (sf tr)
   Yield to tk -> goR (se to) tk
   Await te tf -> Await (\a -> goL se sf (te a)) (\c -> goL se sf (tf c))
 
