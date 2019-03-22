@@ -66,17 +66,19 @@ compose s t = case s of
   Yield to tk -> compose (se to) tk
   Await te tf -> Await (\a -> compose s (te a)) (\c -> compose s (tf c))
 
+data Vessela a b c d e f = Cut f (Vessel a b c d) | Out (Vessel b e d f)
+
 -- compose の書き直し。
-fuse :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c f
+fuse :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c (Vessela a b c d e f)
 fuse s t = goR s t where
  goR :: Vessel b e d f -> Vessel a b c d -> Vessel a e c f
  goR s t = case s of
-  Done sr -> _ sr t
+  Done sr -> Done (_ sr t)
   Yield so sk -> Yield so (goR sk t)
   Await se sf -> goL se sf t
- goL :: (b -> Vessel b e d f) -> (d -> Vessel b e d f) -> Vessel a b c d -> Vessel a e c f
+ goL :: (b -> Vessel b e d f) -> (d -> Vessel b e d f) -> Vessel a b c d -> Vessel a e c (Vessela a b c d e f)
  goL se sf t = case t of
-  Done tr -> _ (sf tr)
+  Done tr -> Done (_ (sf tr))
   Yield to tk -> goR (se to) tk
   Await te tf -> Await (\a -> goL se sf (te a)) (\c -> goL se sf (tf c))
 
