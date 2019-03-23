@@ -122,37 +122,6 @@ instance Applicative (Vessel x0 x1 x2) where
 instance Monad (Vessel x0 x1 x2) where
  (>>=) = bindVessel
 
--- 変換子チックな。
-
-data StrM m a b = NilM (m b) | ConsM (m (a, StrM m a b))
-
-data VesselM m n i o u r
- = DoneM (n r)
- | YieldM (n (o, VesselM m n i o u r))
- | AwaitM (m i -> n (VesselM m n i o u r)) (m u -> n (VesselM m n i o u r))
-
-runVesselM :: forall m n i o u r.
-              (Monad m, Monad n)
-           => (forall x. m x -> n x)
-           -> VesselM m n i o u r
-           -> StrM m i u
-           -> StrM n o r
-runVesselM = goR where
-
- goR :: VesselM m n i o u r -> StrM m i u -> StrM n o r
- goR s t = case s of
-  DoneM nsr -> NilM nsr
-  YieldM nsok -> ConsM (nsok >>= \(so, sk) -> (so, goR sk t))
-  AwaitM se sf -> goL se sf t
-
- goL :: (m i -> VesselM m n i o u r)
-     -> (m u -> VesselM m n i o u r)
-     -> StrM m i u
-     -> StrM n o r
- goL se sf t = case t of
-  NilM mtr -> goR (sf mtr) (Nil tr)
-  ConsM mtok -> mtok >>= \(to, tk) -> goR (se to) tk
-
 -- ダミー。
 
 main :: IO ()
