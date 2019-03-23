@@ -30,55 +30,30 @@ data Vessel i o u r
  | Yield o (Vessel i o u r)
  | Await (i -> Vessel i o u r) (u -> Vessel i o u r)
 
-{-
-
-runVessel :: Vessel i o u r -> Str i u -> Str o r
-runVessel (Done r)    _ = Nil r
-runVessel (Yield o k) s = Cons o (runVessel k s)
-runVessel (Await e f) s = case s of
- Nil u    -> undefined (f u)
- Cons i s -> runVessel (e i) s
-
-runVessel :: Vessel i o u r -> Str i u -> Str o (Vessel i o u r)
-runVessel (Done r)    _ = undefined
-runVessel (Yield o k) s = Cons o (runVessel k s)
-runVessel (Await e f) s = case s of
- Nil u    -> Nil (f u)
- Cons i s -> runVessel (e i) s
-
--}
-
 -- runVessel a b は a の実行結果に従い b から要素を取り出していく。
-runVessel :: Vessel i o u r -> Str i u -> Str o (Either (Vessel i o u r) (Str i u, r))
-runVessel (Done r)    s = Nil (Right (s, r))
-runVessel (Yield o k) s = Cons o (runVessel k s)
-runVessel (Await e f) s = case s of
- Nil u    -> Nil (Left (f u))
- Cons i s -> runVessel (e i) s
-
--- compose a b は a の実行結果に従い b から要素を取り出していく。
-compose :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c f
-compose s t = case s of
- Done sr -> undefined sr t
- Yield so sk -> Yield so (compose sk t)
- Await se sf -> case t of
-  Done tr -> undefined (sf tr)
-  Yield to tk -> compose (se to) tk
-  Await te tf -> Await (\a -> compose s (te a)) (\c -> compose s (tf c))
-
-data Vessela a b c d e f = Cut f (Vessel a b c d) | Out (Vessel b e d f)
-
--- compose の書き直し。
-fuse :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c (Vessela a b c d e f)
-fuse s t = goR s t where
- goR :: Vessel b e d f -> Vessel a b c d -> Vessel a e c (Vessela a b c d e f)
+runVessel :: Vessel i o u r -> Str i u -> Str o r
+runVessel = goR where
+ goR :: Vessel i o u r -> Str i u -> Str o r
  goR s t = case s of
-  Done sr -> Done (Cut sr t)
+  Done sr -> Nil sr
+  Yield so sk -> Cons so (goR sk t)
+  Await se sf -> goL se sf t
+ goL :: (i -> Vessel i o u r) -> (u -> Vessel i o u r) -> Str i u -> Str o r
+ goL se sf t = case t of
+  Nil tr -> goR (sf tr) (Done tr)
+  Cons to tk -> goR (se to) tk
+
+-- fuse a b は a の実行結果に従い b から要素を取り出していく。
+fuse :: forall a b c d e f. Vessel b e d f -> Vessel a b c d -> Vessel a e c f
+fuse = goR where
+ goR :: Vessel b e d f -> Vessel a b c d -> Vessel a e c f
+ goR s t = case s of
+  Done sr -> Done sr
   Yield so sk -> Yield so (goR sk t)
   Await se sf -> goL se sf t
- goL :: (b -> Vessel b e d f) -> (d -> Vessel b e d f) -> Vessel a b c d -> Vessel a e c (Vessela a b c d e f)
+ goL :: (b -> Vessel b e d f) -> (d -> Vessel b e d f) -> Vessel a b c d -> Vessel a e c f
  goL se sf t = case t of
-  Done tr -> Done (Out (sf tr))
+  Done tr -> goR (sf tr) (Done tr)
   Yield to tk -> goR (se to) tk
   Await te tf -> Await (\a -> goL se sf (te a)) (\c -> goL se sf (tf c))
 
