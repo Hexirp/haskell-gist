@@ -90,5 +90,23 @@ joinVessel s = case s of
  Yield so sk -> Yield so (joinVessel sk)
  Await se sf -> Await (\i -> joinVessel (se i)) (\u -> joinVessel (sf u))
 
+bindVessel :: Vessel x0 x1 x2 a -> (a -> Vessel x0 x1 x2 b) -> Vessel x0 x1 x2 b
+bindVessel x f = joinVessel (mapVessel id id id f x)
+
+fappVessel :: Vessel x0 x1 x2 (a -> b) -> Vessel x0 x1 x2 a -> Vessel x0 x1 x2 b
+fappVessel f x = f `bindVessel` \f' -> mapVessel id id id f' x
+
+-- 型クラスのインスタンス。
+
+instance Functor (Vessel x0 x1 x2) where
+ fmap = mapVessel id id id
+
+instance Applicative (Vessel x0 x1 x2) where
+ pure = unitVessel
+ (<*>) = fappVessel
+
+instance Monad (Vessel x0 x1 x2) where
+ (>>=) = bindVessel
+
 main :: IO ()
 main = return ()
