@@ -57,6 +57,8 @@ fuse = goR where
   Yield to tk -> goR (se to) tk
   Await te tf -> Await (\a -> goL se sf (te a)) (\c -> goL se sf (tf c))
 
+-- 以下のような包摂関係がある。
+
 listToStr :: [a] -> Str a ()
 listToStr [] = Nil ()
 listToStr (x : xs) = Cons x (listToStr xs)
@@ -68,6 +70,14 @@ listToVessel (x : xs) = Yield x (listToVessel xs)
 strToVessel :: Str a b -> Vessel x0 a x1 b
 strToVessel (Nil r) = Done r
 strToVessel (Cons x xs) = Yield x (strToVessel xs)
+
+-- 以下のような変性をもつ。
+
+mapVessel :: (i' -> i) -> (o -> o') -> (u' -> u) -> (r -> r') -> Vessel i o u r -> Vessel i' o' u' r'
+mapVessel fi fo fu fr = go where
+ go (Done r) = Done (fr r)
+ go (Yield o k) = Yield (fo o) (go k)
+ go (Await e f) = Await (\i -> e (fi i)) (\u -> f (fu u))
 
 main :: IO ()
 main = return ()
