@@ -77,7 +77,7 @@ mapVessel :: (i' -> i) -> (o -> o') -> (u' -> u) -> (r -> r') -> Vessel i o u r 
 mapVessel fi fo fu fr = go where
  go (Done r) = Done (fr r)
  go (Yield o k) = Yield (fo o) (go k)
- go (Await e f) = Await (\i -> e (fi i)) (\u -> f (fu u))
+ go (Await e f) = Await (\i -> go (e (fi i))) (\u -> go (f (fu u)))
 
 main :: IO ()
 main = return ()
