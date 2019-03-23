@@ -79,5 +79,16 @@ mapVessel fi fo fu fr = go where
  go (Yield o k) = Yield (fo o) (go k)
  go (Await e f) = Await (\i -> go (e (fi i))) (\u -> go (f (fu u)))
 
+-- モナドである。
+
+unitVessel :: a -> Vessel x0 x1 x2 a
+unitVessel = Done
+
+joinVessel :: Vessel x0 x1 x2 (Vessel x0 x1 x2 a) -> Vessel x0 x1 x2 a
+joinVessel s = case s of
+ Done sr -> sr
+ Yield so sk -> Yield so (joinVessel sk)
+ Await se sf -> Await (\i -> joinVessel (se i)) (\u -> joinVessel (sf u))
+
 main :: IO ()
 main = return ()
