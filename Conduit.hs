@@ -40,7 +40,7 @@ runVessel = goR where
   Await se sf -> goL se sf t
  goL :: (i -> Vessel i o u r) -> (u -> Vessel i o u r) -> Str i u -> Str o r
  goL se sf t = case t of
-  Nil tr -> goR (sf tr) (Done tr)
+  Nil tr -> goR (sf tr) (Nil tr)
   Cons to tk -> goR (se to) tk
 
 -- fuse a b は a の実行結果に従い b から要素を取り出していく。
