@@ -129,11 +129,12 @@ data StrM m a b = NilM (m b) | ConsM (m (a, StrM m a b))
 data VesselM m n i o u r
  = DoneM (n r)
  | YieldM (n (o, VesselM m n i o u r))
- | AwaitM (m i -> VesselM m n i o u r) (m u -> VesselM m n i o u r)
+ | AwaitM (m i -> n (VesselM m n i o u r)) (m u -> n (VesselM m n i o u r))
 
 runVesselM :: forall m n i o u r.
               (Monad m, Monad n)
-           => VesselM m n i o u r
+           => (forall x. m x -> n x)
+           -> VesselM m n i o u r
            -> StrM m i u
            -> StrM n o r
 runVesselM = goR where
