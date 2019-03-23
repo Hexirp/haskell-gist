@@ -122,6 +122,28 @@ instance Applicative (Vessel x0 x1 x2) where
 instance Monad (Vessel x0 x1 x2) where
  (>>=) = bindVessel
 
+{-
+
+data Conduit :: * -> * -> * -> * -> * / i o u r where
+ Yield :: o -> Conduit i o u ()
+ Await :: (i -> r) -> (u -> r) -> Conduit i o u r
+
+data Conduit i o u r = Yield o r | Await (i -> r) (u -> r)
+
+data Str a b k = Nil b | Cons a k
+
+data Conduit i o u r k = Done r | Yield o k | Await (Str i u () -> k)
+
+data Conduit i o u r k = Out (Str o r k) | In (Str i u () -> k)
+
+data InOut f i o k = Out (() -> f o k) | In (f i () -> k)
+
+data Str (a, b) k = Nil b | Cons a k
+
+type Conduit i o u r = Fix (InOut Str (i, u) (o, r))
+
+-}
+
 -- ダミー。
 
 main :: IO ()
