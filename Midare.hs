@@ -2,6 +2,8 @@ module Midare where
 
   import Prelude
 
+  {-
+
   unlines :: String -> [String]
   unlines x = go id x
    where
@@ -41,3 +43,18 @@ module Midare where
     go xv (xsv : xss) = case xv of
       [] -> [] : go xsv xss
       xvv : xvs -> xvv : go xvs (xsv : xss)
+
+  -}
+
+  data Lines = Cha Char Lines | New Break | End
+
+  data Break = Break Lines
+
+  unlines :: String -> Lines
+  unlines x = go id x
+   where
+    go :: (Lines -> Lines) -> String -> [String]
+    go s [] = s End
+    go s (xv : xs) = case xv of
+      '\n' -> s (New (Break (go id xs)))
+      _ -> go (\y -> s (Cha xv y)) xs
