@@ -58,3 +58,9 @@ module Midare where
     go s (xv : xs) = case xv of
       '\n' -> s (New (Break (go id xs)))
       _ -> go (\y -> s (Cha xv y)) xs
+
+  data Lines = Cha Char Lines | New Break | Prg Parag | End
+
+  data Break = Break Lines
+
+  data Parag = Parag Lines
