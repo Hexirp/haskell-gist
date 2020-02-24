@@ -29,3 +29,14 @@ module Mealy where
   -- Coyoneda (Reader r) は、そのままモナドになることができる。
   --
   -- Free (Coyoneda (Reader r)) もモナドになることができる。
+  
+  newtype Mealy a b = Mealy { runMealy :: forall r. a -> (b -> Mealy a b -> r) -> r }
+
+  instance Functor (Mealy i) where
+    fmap f = go where
+      go (Mealy x) = Mealy (\a k -> x a (\b x' -> k (f b) (go x')))
+
+  instance Applicative (Mealy i) where
+    pure b = go where
+      go = Mealy (\a k -> k b go)
+    Mealy m <*> Mealy n = Mealy (\a k -> m a (\f m' -> n a (\b n' -> k (f b) (m' <*> n'))))
