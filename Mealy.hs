@@ -16,3 +16,16 @@ module Mealy where
 
   instance Monad (Mealy i) where
     Mealy m >>= f = Mealy (\a -> case m a of (b0, m') -> case f b0 of Mealy n -> case n a of (b1, n') -> (b1, m' >>= undefined f n'))
+
+  -- data Reader r :: Type -> Type where
+  --   Ask :: forall r. Reader r r
+  --
+  -- Coyoneda (Reader r) a
+  --   ~
+  -- sigma b, (b -> a, Reader r b)
+  --   ~
+  -- r -> a
+  --
+  -- Coyoneda (Reader r) は、そのままモナドになることができる。
+  --
+  -- Free (Coyoneda (Reader r)) もモナドになることができる。
