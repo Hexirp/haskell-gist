@@ -40,3 +40,34 @@ module Mealy where
     pure b = go where
       go = Mealy (\a k -> k b go)
     Mealy m <*> Mealy n = Mealy (\a k -> m a (\f m' -> n a (\b n' -> k (f b) (m' <*> n'))))
+
+  -- newtype Compiler a = Compiler { unCompiler :: CompilerRead -> IO (CompilerResult a) }
+  --
+  -- data CompilerResult a = CompilerDone a CompilerWrite | CompilerSnapshot Snapshot (Compiler a) | CompilerRequire (Identifier, Snapshot) (Compiler a) | CompilerError (CompilerErrors String)
+  --
+  -- なぜ、これが Monad Compiler となり、成立するのか。どうやって正しいモナドにすればいいのか。
+  --
+  -- もし CompilerRead が不変であるならば、それは正しいモナドになる。そして、確かにそうだろう。
+  --
+  -- 正しい Functor であるのだから Free を使えばよい。
+  --
+  -- Compiler a
+  --   ~
+  -- CompilerRead -> IO (CompilerResult a)
+  --   ~
+  -- forall r. CompilerRead -> (IO (CompilerResult a) -> r) -> r
+  --   ~
+  -- forall r. CompilerRead -> (CompilerResult a -> IO r) -> IO r
+  --   ~
+  -- forall r. CompilerRead -> (a -> CompilerWrite -> IO r) -> (Snapshot -> Compiler a -> IO r) -> (Identifier -> Snapshot -> Compiler a -> IO r) -> (CompilerErrors String -> IO r) -> IO r
+  --
+  -- Compiler モナドは Coroutine 系であり、こうして表せる。
+  --
+  -- data CompilerSuspend a where
+  --   CompilerSnapshot :: Snapshot -> a -> CompilerSuspend a
+  --   CompilerRequire :: Identifier -> Snapshot -> a -> CompilerSuspend a
+  --   CompilerError :: CompilerErrors String -> CompilerSuspend a
+  -- 
+  -- type Compiler = Coroutine CompilerSuspend IO
+  --
+  -- ただし、これだけでは足りない。 Reader CompilerRead と Writer CompilerWrite の作用も必要である。
