@@ -121,3 +121,6 @@ module Main where
 
   yield_0 :: a -> IORef (Source (Cio r r) a) -> Cio (Step a (Source (Cio i i) b)) (Step b (Source (Cio i i) b)) ()
   yield_0 x ref = (shiftCio $ \k -> pureCio $ More x $ Source $ resetCio $ k Done) `bindCio` \res -> liftIOCio $ writeIORef ref $ Source $ pureCio res
+
+  yield_1 :: a -> IORef (Source (Cio r r) a) -> Cio (Source (Cio i i) a) (Source (Cio i i) a) ()
+  yield_1 x ref = Cio $ \k -> fmap (\res -> Source $ pureCio res) $ runCio (yield_0 x ref) $ \y -> runCio (fmap unSource $ k y) pure
