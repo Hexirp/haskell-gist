@@ -75,7 +75,7 @@ module Main where
   runCoroutine m = Source $ resetT $ do
     ref <- liftIO $ newIORef emptySource
     runReaderT m ref
-    readIORef ref >>= unSource
+    liftIO $ readIORef ref >>= unSource
 
   main :: IO ()
   main = return ()
