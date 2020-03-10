@@ -105,7 +105,7 @@ module Main where
   joinCio m = Cio (\k -> runCio m (\n -> runCio n k))
 
   shiftCio :: ((a -> Cio i i o) -> Cio r j j) -> Cio r o a
-  shiftCio f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> k1 (k0 x)))) (\x -> x))
+  shiftCio f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> k1 (k0 x)))) pure)
 
   resetCio :: Cio a o o -> Cio r r a
-  resetCio m = Cio (\k -> k (runCio m (\x -> x)))
+  resetCio m = Cio (\k -> k (runCio m pure))
