@@ -95,7 +95,7 @@ module Main where
   fmapCio :: (a -> b) -> Cio r o a -> Cio r o b
   fmapCio f m = Cio (\k -> runCio m (\x -> k (f x)))
 
-  pureCio :: a -> Cio r o a
+  pureCio :: a -> Cio r r a
   pureCio x = Cio (\k -> k x)
 
   bindCio :: Cio r i a -> (a -> Cio i o b) -> Cio r o b
