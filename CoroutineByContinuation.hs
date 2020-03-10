@@ -87,7 +87,7 @@ module Main where
 
   -- newtype Cor s m a = Cor { runCor :: forall r. (s (Cor s m a) -> m r) -> (a -> m r) -> m r }
 
-  newtype Cio r o a = Cio { runCio (a -> IO o) -> IO r }
+  newtype Cio r o a = Cio { runCio :: (a -> IO o) -> IO r }
 
   evalCio :: Cio r o o -> IO r
   evalCio m = runCio m pure
