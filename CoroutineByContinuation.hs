@@ -2,6 +2,9 @@ module Main where
 
   import Prelude
 
+  import Control.Monad.Trans.Cont
+  import Control.Monad.Trans.Reader
+
   -- タイトル通り。
   --
   -- https://medium.com/@star_zero/callback%E5%BD%A2%E5%BC%8F%E3%81%AE%E3%82%82%E3%81%AE%E3%82%92coroutines%E3%81%AB%E5%AF%BE%E5%BF%9C%E3%81%99%E3%82%8B-9384dfa6ad77
@@ -33,3 +36,30 @@ module Main where
   -- Free (Yield a b) === Coroutine (Yield a b) Identity
   --
   -- おそらく、こうなる。
+  
+  data Step a r = More a r | Done
+
+  newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
+
+  -- https://github.com/fumieval/coroutine/blob/a7c7081aeab53f4887897b1d7259f10aacc8609e/Coroutine.hs
+  --
+  -- これを参考にした。
+  --
+  -- Source IO になっているのを Source (Cont IO) にすればいいんかな？
+  --
+  -- data Step a r = More a r として、
+  --
+  -- Coroutine (Step a) m () === Source m a となる。たぶん。
+  --
+  -- ここで、前者は実行にステップがあるわけだけど、後者にはない。
+  
+  emptySource :: Applicative m => Source m a
+  emptySource = Source $ pure Done
+
+  type SourceBuilder a = IORef (Source (ContT IO) a)
+
+  yield :: a -> ReaderT (SourceBuilder a) IO ()
+  yield x = ReaderT $ \r -> do
+    result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ cont $ pure Done
+    writeIORef r $ Source $ pure result
+  {-# INLINE yield #-}
