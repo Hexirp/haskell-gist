@@ -6,6 +6,8 @@ module Main where
 
   import Data.IORef
 
+  import Control.Monad.IO.Class
+
   import Control.Monad.Trans.Cont
   import Control.Monad.Trans.Reader
 
@@ -65,7 +67,7 @@ module Main where
   yield :: a -> ReaderT (SourceBuilder r a) (ContT r IO) ()
   yield x = ReaderT $ \r -> do
     result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ cont $ pure Done
-    writeIORef r $ Source $ pure result
+    liftIO $ writeIORef r $ Source $ pure result
   {-# INLINE yield #-}
 
   main :: IO ()
