@@ -1,8 +1,10 @@
--- stack --resolver=lts-12.26 runghc --package=transformer
+-- stack --resolver=lts-12.26 runghc --package=transformers
 
 module Main where
 
   import Prelude
+
+  import Data.IORef
 
   import Control.Monad.Trans.Cont
   import Control.Monad.Trans.Reader
