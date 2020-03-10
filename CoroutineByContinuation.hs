@@ -126,4 +126,4 @@ module Main where
   yield_0 x ref = (shiftCio $ \k -> pureCio $ More x $ Source $ resetCio $ k Done) `bindCio` \res -> liftIOCio $ writeIORef ref $ Source $ pureCio res
 
   runCoroutine :: (IORef (Source (Cio _ _) a) -> Cio _ _ ()) -> Source (Cio _ _) a
-  runCoroutine m = Source $ resetCio $ (liftIOCio $ newIORef emptySource) `bindCio` \ref -> m ref `bindCio` \_ -> _
+  runCoroutine m = Source $ resetCio $ (liftIOCio $ newIORef emptySource) `bindCio` \ref -> m ref `bindCio` \_ -> liftIOCio _
