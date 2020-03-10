@@ -76,7 +76,13 @@ module Main where
     ref <- liftIO $ newIORef emptySource
     runReaderT m ref
     result <- liftIO $ readIORef ref
-    unSource result
+    undefined unSource result
 
   main :: IO ()
   main = return ()
+
+  -- うーん。型が合わない。
+  
+  -- newtype Cor s m a = Cor { runCor :: forall r. (Either (s (Cor s m a)) a -> m r) -> m r }
+
+  newtype Cor s m a = Cor { runCor :: forall r. (s (Cor s m a) -> m r) -> (a -> m r) -> m r }
