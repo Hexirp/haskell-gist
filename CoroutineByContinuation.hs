@@ -71,5 +71,11 @@ module Main where
     liftIO $ writeIORef r $ Source $ pure result
   {-# INLINE yield #-}
 
+  runCoroutine :: ReaderT (SourceBuilder a) (ContT (Step a (Source (ContT r IO) a)) IO) () -> Source (ContT r IO) a
+  runCoroutine m = Source $ resetT $ do
+    ref <- liftIO $ newIORef emptySource
+    runReaderT m ref
+    readIORef ref >>= unSource
+
   main :: IO ()
   main = return ()
