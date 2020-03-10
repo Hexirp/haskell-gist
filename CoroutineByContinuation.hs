@@ -62,7 +62,7 @@ module Main where
 
   type SourceBuilder r a = IORef (Source (ContT r IO) a)
 
-  yield :: a -> ReaderT (SourceBuilder r a) IO ()
+  yield :: a -> ReaderT (SourceBuilder r a) (ContT IO) ()
   yield x = ReaderT $ \r -> do
     result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ cont $ pure Done
     writeIORef r $ Source $ pure result
