@@ -68,7 +68,7 @@ module Main where
   yield :: forall r a. a -> ReaderT (SourceBuilder r a) (ContT r IO) ()
   yield x = ReaderT $ \r -> do
     result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ liftIO $ cont Done
-    liftIO $ writeIORef r $ (Source $ pure result :: Source (ContT r IO) a)
+    liftIO $ writeIORef (r :: IORef (Source (ContT r IO))) $ (Source $ pure result :: Source (ContT r IO) a)
   {-# INLINE yield #-}
 
   main :: IO ()
