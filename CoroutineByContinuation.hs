@@ -125,4 +125,5 @@ module Main where
   yield_1 :: a -> IORef (Source (Cio r r) a) -> Cio (Source (Cio _ _) _) (Source (Cio _ _) _) ()
   yield_1 x ref = Cio $ \k -> _ (runCio (yield_0 x ref) $ \y -> _ (k y))
     where
-      deS s = join $ fmap (\x -> runCio (unSource x) pure) $ s
+      des :: Source (Cio r r) a -> Step a (Source (Cio r r) a)
+      deS x = _ (unSource x)
