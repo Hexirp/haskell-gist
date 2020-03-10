@@ -112,10 +112,12 @@ module Main where
   resetCio :: Cio a o o -> Cio r r a
   resetCio m = Cio (\k -> join (fmap k (runCio m pure)))
 
+  liftIOCio :: IO a -> Cio r r a
+  liftIOCio m = Cio $ \k -> join (fmap k m)
+
   data Step a r = More a r | Done
 
   newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
 
-  newtype SourceBuilder r a = SourceBuilder
-    { unBuilder :: IORef (Source (Cio r r) a)
-    }
+  yield :: a -> IORef (Source (Cio _ _) a) -> Cio r o (Source (Cio _ _) a)
+  yield x ref = shiftCio $ \k -> pure $ More x $ Source $ resetCio $ k Done
