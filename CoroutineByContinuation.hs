@@ -76,7 +76,7 @@ module Main where
     ref <- liftIO $ newIORef emptySource
     runReaderT m ref
     result <- liftIO $ readIORef ref
-    return $ unSource result
+    unSource result
 
   main :: IO ()
   main = return ()
