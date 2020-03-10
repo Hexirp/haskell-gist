@@ -108,4 +108,4 @@ module Main where
   shiftCio f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> join (fmap k1 (k0 x))))) pure)
 
   resetCio :: Cio a o o -> Cio r r a
-  resetCio m = Cio (\k -> k (runCio m pure))
+  resetCio m = Cio (\k -> join (fmap k (runCio m pure)))
