@@ -1,4 +1,5 @@
 -- stack --resolver=lts-12.26 runghc --package=transformers
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
@@ -64,10 +65,10 @@ module Main where
 
   type SourceBuilder r a = IORef (Source (ContT r IO) a)
 
-  yield :: a -> ReaderT (SourceBuilder r a) (ContT r IO) ()
+  yield :: forall r a. a -> ReaderT (SourceBuilder r a) (ContT r IO) ()
   yield x = ReaderT $ \r -> do
     result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ liftIO $ cont Done
-    liftIO $ writeIORef r $ Source $ pure result
+    liftIO $ writeIORef r $ Source $ pure result `const` (result :: Source (ContT r IO) a)
   {-# INLINE yield #-}
 
   main :: IO ()
