@@ -92,20 +92,20 @@ module Main where
   evalCio :: Cio r o o -> IO r
   evalCio m = runCio m pure
 
-  fmap :: (a -> b) -> Cio r o a -> Cio r o b
-  fmap f m = Cio (\k -> runCio m (\x -> k (f x)))
+  fmapCio :: (a -> b) -> Cio r o a -> Cio r o b
+  fmapCio f m = Cio (\k -> runCio m (\x -> k (f x)))
 
-  pure :: a -> Cio r o a
-  pure x = Cio (\k -> k x)
+  pureCio :: a -> Cio r o a
+  pureCio x = Cio (\k -> k x)
 
-  bind :: Cio r i a -> (a -> Cio i o b) -> Cio r o b
-  m >>= f = Cio (\k -> runCio m (\x -> runCio (f x) k))
+  bindCio :: Cio r i a -> (a -> Cio i o b) -> Cio r o b
+  bindCio m f = Cio (\k -> runCio m (\x -> runCio (f x) k))
 
-  join :: Cio r i (Cio i o a) -> Cio r o a
-  join m = Cio (\k -> runCio m (\n -> runCio n k))
+  joinCio :: Cio r i (Cio i o a) -> Cio r o a
+  joinCio m = Cio (\k -> runCio m (\n -> runCio n k))
 
-  shift :: ((a -> Cio i i o) -> Cio r j j) -> Cio r o a
-  shift f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> k1 (k0 x)))) (\x -> x))
+  shiftCio :: ((a -> Cio i i o) -> Cio r j j) -> Cio r o a
+  shiftCio f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> k1 (k0 x)))) (\x -> x))
 
-  reset :: Cio a o o -> Cio r r a
-  reset m = Cio (\k -> k (runCio m (\x -> x)))
+  resetCio :: Cio a o o -> Cio r r a
+  resetCio m = Cio (\k -> k (runCio m (\x -> x)))
