@@ -60,7 +60,7 @@ module Main where
   emptySource :: Applicative m => Source m a
   emptySource = Source $ pure Done
 
-  type SourceBuilder a = IORef (Source (ContT IO) a)
+  type SourceBuilder r a = IORef (Source (ContT r IO) a)
 
   yield :: a -> ReaderT (SourceBuilder a) IO ()
   yield x = ReaderT $ \r -> do
