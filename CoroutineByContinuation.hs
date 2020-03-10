@@ -5,9 +5,11 @@ module Main where
 
   import Prelude
 
-  import Data.IORef
+  import Control.Monad ( join )
 
   import Control.Monad.IO.Class
+
+  import Data.IORef
 
   import Control.Monad.Trans.Cont
   import Control.Monad.Trans.Reader
