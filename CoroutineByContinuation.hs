@@ -1,3 +1,5 @@
+-- stack --resolver=lts-12.26 runghc --package=transformer
+
 module Main where
 
   import Prelude
@@ -63,3 +65,6 @@ module Main where
     result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ cont $ pure Done
     writeIORef r $ Source $ pure result
   {-# INLINE yield #-}
+
+  main :: IO ()
+  main = return ()
