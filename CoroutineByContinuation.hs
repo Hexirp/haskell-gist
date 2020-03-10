@@ -119,5 +119,5 @@ module Main where
 
   newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
 
-  yield_0 :: a -> IORef (Source (Cio _ _) a) -> Cio _ _ ()
+  yield_0 :: a -> IORef (Source (Cio r r) a) -> Cio _ _ ()
   yield_0 x ref = (shiftCio $ \k -> pureCio $ More x $ Source $ resetCio $ k Done) `bindCio` \res -> liftIOCio $ writeIORef ref $ Source $ pureCio res
