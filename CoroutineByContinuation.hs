@@ -119,11 +119,11 @@ module Main where
 
   newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
 
+  emptySource :: Applicative m => Source m a
+  emptySource = Source $ pure Done
+
   yield_0 :: a -> IORef (Source (Cio r r) a) -> Cio (Step a (Source (Cio i i) b)) (Step b (Source (Cio i i) b)) ()
   yield_0 x ref = (shiftCio $ \k -> pureCio $ More x $ Source $ resetCio $ k Done) `bindCio` \res -> liftIOCio $ writeIORef ref $ Source $ pureCio res
 
-  yield_1 :: a -> IORef (Source (Cio r r) a) -> Cio (Source (Cio _ _) _) (Source (Cio _ _) _) ()
-  yield_1 x ref = Cio $ \k -> _ (runCio (yield_0 x ref) $ \y -> _ (k y))
-    where
-      deS :: Source (Cio r r) a -> Step a (Source (Cio r r) a)
-      deS x = _ (unSource x)
+  runCoroutine :: (IORef (Source (Cio _ _) a) -> Cio _ _ ()) -> Source (Cio _ _) a
+  runCoroutine m = Source $ resetCio $ (liftIOCio $ newIORef emptySource) `bindCio` \ref -> m ref `bindCio` \_ -> liftIOCio $ readIORef ref >>= unSource
