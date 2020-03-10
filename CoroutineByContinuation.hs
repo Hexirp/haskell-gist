@@ -28,9 +28,9 @@ module Main where
   --
   -- 思っていたのと違う。
   
-  newtype Coroutine s m r = Coroutine { resume :: m (Either (s (Coroutine s m r)) r) }
+  -- newtype Coroutine s m r = Coroutine { resume :: m (Either (s (Coroutine s m r)) r) }
 
-  data Yield a b c = Yield a (b -> c)
+  -- data Yield a b c = Yield a (b -> c)
 
   -- https://www.stackage.org/haddock/lts-15.3/freer-simple-1.2.1.1/Control-Monad-Freer-Coroutine.html
   --
@@ -44,9 +44,9 @@ module Main where
   --
   -- おそらく、こうなる。
   
-  data Step a r = More a r | Done
+  -- data Step a r = More a r | Done
 
-  newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
+  -- newtype Source m a = Source { unSource :: m (Step a (Source m a)) }
 
   -- https://github.com/fumieval/coroutine/blob/a7c7081aeab53f4887897b1d7259f10aacc8609e/Coroutine.hs
   --
@@ -60,23 +60,23 @@ module Main where
   --
   -- ここで、前者は実行にステップがあるわけだけど、後者にはない。
   
-  emptySource :: Applicative m => Source m a
-  emptySource = Source $ pure Done
+  -- emptySource :: Applicative m => Source m a
+  -- emptySource = Source $ pure Done
 
-  type SourceBuilder r a = IORef (Source (ContT r IO) a)
+  -- type SourceBuilder r a = IORef (Source (ContT r IO) a)
 
-  yield :: forall r a. a -> ReaderT (SourceBuilder r a) (ContT (Step a (Source (ContT r IO) a)) IO) ()
-  yield x = ReaderT $ \r -> do
-    result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ liftIO $ cont Done
-    liftIO $ writeIORef r $ Source $ pure result
-  {-# INLINE yield #-}
+  -- yield :: forall r a. a -> ReaderT (SourceBuilder r a) (ContT (Step a (Source (ContT r IO) a)) IO) ()
+  -- yield x = ReaderT $ \r -> do
+  --   result <- shiftT $ \cont -> pure $ More x $ Source $ resetT $ liftIO $ cont Done
+  --   liftIO $ writeIORef r $ Source $ pure result
+  -- {-# INLINE yield #-}
 
-  runCoroutine :: ReaderT (SourceBuilder r a) (ContT (Step a (Source (ContT r IO) a)) IO) () -> Source (ContT r IO) a
-  runCoroutine m = Source $ resetT $ do
-    ref <- liftIO $ newIORef emptySource
-    runReaderT m ref
-    result <- liftIO $ readIORef ref
-    undefined unSource result
+  -- runCoroutine :: ReaderT (SourceBuilder r a) (ContT (Step a (Source (ContT r IO) a)) IO) () -> Source (ContT r IO) a
+  -- runCoroutine m = Source $ resetT $ do
+  --   ref <- liftIO $ newIORef emptySource
+  --   runReaderT m ref
+  --   result <- liftIO $ readIORef ref
+  --   undefined unSource result
 
   main :: IO ()
   main = return ()
@@ -85,4 +85,27 @@ module Main where
   
   -- newtype Cor s m a = Cor { runCor :: forall r. (Either (s (Cor s m a)) a -> m r) -> m r }
 
-  newtype Cor s m a = Cor { runCor :: forall r. (s (Cor s m a) -> m r) -> (a -> m r) -> m r }
+  -- newtype Cor s m a = Cor { runCor :: forall r. (s (Cor s m a) -> m r) -> (a -> m r) -> m r }
+  
+  newtype Cio r o a = Cio { runCio (a -> IO o) -> IO r }
+
+  evalCio :: Cio r o o -> IO r
+  evalCio m = runCio m pure
+
+  fmap :: (a -> b) -> Cio r o a -> Cio r o b
+  fmap f m = Cio (\k -> runCio m (\x -> k (f x)))
+
+  pure :: a -> Cio r o a
+  pure x = Cio (\k -> k x)
+
+  bind :: Cio r i a -> (a -> Cio i o b) -> Cio r o b
+  m >>= f = Cio (\k -> runCio m (\x -> runCio (f x) k))
+
+  join :: Cio r i (Cio i o a) -> Cio r o a
+  join m = Cio (\k -> runCio m (\n -> runCio n k))
+
+  shift :: ((a -> Cio i i o) -> Cio r j j) -> Cio r o a
+  shift f = Cio (\k0 -> runCio (f (\x -> Cio (\k1 -> k1 (k0 x)))) (\x -> x))
+
+  reset :: Cio a o o -> Cio r r a
+  reset m = Cio (\k -> k (runCio m (\x -> x)))
