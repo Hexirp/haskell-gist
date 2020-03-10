@@ -123,6 +123,6 @@ module Main where
   yield_0 x ref = (shiftCio $ \k -> pureCio $ More x $ Source $ resetCio $ k Done) `bindCio` \res -> liftIOCio $ writeIORef ref $ Source $ pureCio res
 
   yield_1 :: a -> IORef (Source (Cio r r) a) -> Cio (Source (Cio _ _) _) (Source (Cio _ _) _) ()
-  yield_1 x ref = Cio $ \k -> _ (runCio (yield_0 x ref) $ \y -> deS (k y))
+  yield_1 x ref = Cio $ \k -> _ (runCio (yield_0 x ref) $ \y -> _ (k y))
     where
-      deS = fmap (\x -> runCio (unSource x) pure)
+      deS = fmap (\x -> runCio (unSource x) _)
